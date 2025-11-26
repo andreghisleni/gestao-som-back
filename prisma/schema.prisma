@@ -1,0 +1,355 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
+
+  emailVerified Boolean
+  image         String?
+
+  createdAt DateTime
+  updatedAt DateTime
+
+  sessions Session[]
+  accounts Account[]
+
+  role       String?
+  banned     Boolean?
+  banReason  String?
+  banExpires DateTime?
+
+  events Event[]
+
+  lastUserEventId String?
+
+  payments Payment[]
+
+  performedTicketFlows TicketFlow[]
+
+  @@map("users")
+}
+
+model Session {
+  id String @id @default(uuid())
+
+  expiresAt DateTime
+  token     String   @unique
+
+  createdAt DateTime
+  updatedAt DateTime
+
+  ipAddress String?
+
+  userAgent String?
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  @@map("sessions")
+}
+
+model Account {
+  id String @id @default(uuid())
+
+  accountId  String
+  providerId String
+  userId     String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verifications")
+}
+
+model Event {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  ticketType  EventTicketType @default(SINGLE_NUMERATION)
+
+  ownerId String?
+  owner   User?   @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+
+  members         Member[]
+  oldTicketRanges TicketRange[]
+  tickets         Ticket[]
+  ticketFlows     TicketFlow[]
+
+  ticketRanges EventTicketRange[]
+
+  autoGenerateTicketsTotalPerMember Int? @map("auto_generate_tickets_total_per_member")
+
+  readOnly Boolean @default(false) @map("read_only")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("events")
+}
+
+enum EventTicketType {
+  SINGLE_NUMERATION
+  MULTIPLE_NUMERATIONS
+}
+
+model EventTicketRange {
+  id String @id @default(uuid())
+
+  type String
+
+  start Int
+  end   Int
+
+  cost Float?
+
+  eventId String @map("event_id")
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  // alocações por membro para este ticket range
+  memberAllocations MemberTicketAllocation[]
+  tickets           Ticket[]
+
+  @@map("event_ticket_ranges")
+}
+
+model ScoutSession {
+  id String @id @default(uuid())
+
+  name String @unique
+
+  type SessionType
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  members Member[]
+
+  @@map("scout_sessions")
+}
+
+enum SessionType {
+  LOBINHO
+  ESCOTEIRO
+  SENIOR
+  PIONEIRO
+  OUTRO
+}
+
+model Member {
+  id String @id @default(uuid())
+
+  eventId String @map("event_id")
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  order Int?
+
+  visionId  String? @map("vision_id")
+  name      String
+  cleanName String  @map("clean_name")
+  register  String?
+
+  isAllConfirmedButNotYetFullyPaid Boolean @default(false) @map("is_all_confirmed_but_not_yet_fully_paid")
+
+  sessionId String       @map("session_id")
+  session   ScoutSession @relation(fields: [sessionId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tickets      Ticket[]
+  ticketRanges TicketRange[]
+  payments     Payment[]
+
+  // quantidades de ingressos alocadas por member por EventTicketRange
+  ticketAllocations MemberTicketAllocation[]
+
+  @@map("members")
+}
+
+model TicketRange {
+  id String @id @default(uuid())
+
+  start Int
+  end   Int
+
+  memberId String? @map("member_id")
+  member   Member? @relation(fields: [memberId], references: [id])
+
+  generatedAt DateTime? @map("generated_at")
+
+  tickets Ticket[]
+
+  eventId String @map("event_id")
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("ticket_ranges")
+}
+
+model Ticket {
+  id String @id @default(uuid())
+
+  number Int
+
+  memberId String? @map("member_id")
+  member   Member? @relation(fields: [memberId], references: [id])
+
+  name        String?
+  phone       String?
+  description String?
+
+  deliveredAt DateTime? @map("delivered_at")
+
+  returned Boolean @default(false)
+
+  createdAt DateTime      @default(now()) @map("created_at")
+  created   TicketCreated @default(ONTHELOT) @map("created")
+
+  eventId String @map("event_id")
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  oTicketRangeId String?      @map("o_ticket_range_id")
+  oTicketRange   TicketRange? @relation(fields: [oTicketRangeId], references: [id])
+
+  ticketRangeId String?           @map("ticket_range_id")
+  ticketRange   EventTicketRange? @relation(fields: [ticketRangeId], references: [id])
+
+  allocationId String?                 @map("allocation_id")
+  allocation   MemberTicketAllocation? @relation(fields: [allocationId], references: [id])
+
+  flows TicketFlow[]
+
+  @@map("tickets")
+}
+
+enum TicketCreated {
+  ONTHELOT
+  AFTERIMPORT
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  visionId String? @map("vision_id")
+
+  amount Float
+
+  type PaymentType
+
+  payedAt DateTime @default(now()) @map("paid_at")
+
+  memberId String @map("member_id")
+  member   Member @relation(fields: [memberId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  deletedAt     DateTime? @map("deleted_at")
+  deletedBy     String?   @map("deleted_by")
+  deletedByUser User?     @relation(fields: [deletedBy], references: [id])
+
+  @@map("payments")
+}
+
+enum PaymentType {
+  CASH
+  PIX
+}
+
+// Controle de estoque físico de ingressos
+// Tipos de ações realizadas sobre um ticket (histórico/fluxo)
+enum TicketFlowType {
+  CREATED
+  ASSIGNED
+  DETACHED
+  RETURNED
+  SOLD
+  CHECKED_IN
+}
+
+model TicketFlow {
+  id String @id @default(uuid())
+
+  ticketId String? @map("ticket_id")
+  ticket   Ticket? @relation(fields: [ticketId], references: [id])
+
+  eventId String @map("event_id")
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  type TicketFlowType
+
+  // membro envolvido (de quem veio / para quem foi)
+  fromMemberId String? @map("from_member_id")
+  toMemberId   String? @map("to_member_id")
+
+  // usuário que realizou a ação (opcional)
+  performedBy     String? @map("performed_by")
+  performedByUser User?   @relation(fields: [performedBy], references: [id])
+
+  note String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("ticket_flows")
+}
+
+// Quantidade de ingressos alocadas por membro por tipo de EventTicketRange
+model MemberTicketAllocation {
+  id String @id @default(uuid())
+
+  memberId String @map("member_id")
+  member   Member @relation(fields: [memberId], references: [id])
+
+  eventTicketRangeId String           @map("event_ticket_range_id")
+  eventTicketRange   EventTicketRange @relation(fields: [eventTicketRangeId], references: [id])
+
+  // quantidade de tickets alocados desse tipo para o membro
+  quantity Int @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  tickets   Ticket[]
+
+  @@unique([memberId, eventTicketRangeId])
+  @@map("member_ticket_allocations")
+}
