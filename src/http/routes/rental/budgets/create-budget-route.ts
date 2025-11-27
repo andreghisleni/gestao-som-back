@@ -1,10 +1,10 @@
-import { randomUUID } from 'node:crypto';
-import Elysia, { t } from 'elysia';
-import { authMacro } from '~/auth';
-import { prisma } from '~/db/client';
+import { randomUUID } from "node:crypto";
+import Elysia, { t } from "elysia";
+import { authMacro } from "~/auth";
+import { prisma } from "~/db/client";
 
 export const createBudgetRoute = new Elysia().macro(authMacro).post(
-  '/',
+  "/",
   async ({ user, body }) => {
     const { clientName, eventDate, sections } = body;
 
@@ -13,10 +13,10 @@ export const createBudgetRoute = new Elysia().macro(authMacro).post(
         data: {
           clientName,
           eventDate: new Date(eventDate),
-          status: 'DRAFT',
-          totalValue: '0',
-          discount: '0',
-          finalValue: '0',
+          status: "DRAFT",
+          totalValue: "0",
+          discount: "0",
+          finalValue: "0",
           createdById: user.id,
         },
       });
@@ -113,27 +113,77 @@ export const createBudgetRoute = new Elysia().macro(authMacro).post(
     });
 
     // retornar id criado de forma simples
-    return { id: result?.id ?? '' };
+    return { id: result?.id ?? "" };
   },
   {
     auth: true,
-    body: t.Object({
-      clientName: t.String(),
-      eventDate: t.String(),
-      sections: t.Optional(
-        t.Array(
-          t.Object({
-            name: t.String(),
-            items: t.Array(
-              t.Object({ equipmentId: t.String(), quantity: t.Number() })
-            ),
-          })
-        )
-      ),
-    }),
+    body: t.Object(
+      {
+        clientName: t.String({
+          description: "Name of the client for the budget",
+        }),
+        eventDate: t.String({
+          description: "Date of the event for the budget",
+        }),
+        sections: t.Optional(
+          t.Array(
+            t.Object(
+              {
+                name: t.String({
+                  description: "Name of the budget section",
+                }),
+                items: t.Array(
+                  t.Object(
+                    {
+                      equipmentId: t.String({
+                        description: "ID of the equipment",
+                      }),
+                      quantity: t.Number({
+                        description: "Quantity of the equipment",
+                      }),
+                    },
+                    {
+                      description: "Item in the budget section",
+                    }
+                  )
+                ),
+              },
+              {
+                description: "Section of the budget",
+              }
+            )
+          )
+        ),
+      },
+      {
+        description: "Payload to create a new budget",
+      }
+    ),
     response: {
-      201: t.Object({ id: t.String() }),
-      400: t.Object({ error: t.String() }),
+      201: t.Object(
+        {
+          id: t.String({
+            description: "Created budget ID",
+          }),
+        },
+        {
+          description: "Response containing the ID of the created budget",
+        }
+      ),
+      400: t.Object(
+        {
+          error: t.String({
+            description: "Error message",
+          }),
+        },
+        {
+          description: "Error response",
+        }
+      ),
+    },
+    detail: {
+      summary: "Create a new budget",
+      operationId: "createBudget",
     },
   }
 );

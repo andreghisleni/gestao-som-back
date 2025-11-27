@@ -1,23 +1,23 @@
-import cors from '@elysiajs/cors';
-import swagger from '@elysiajs/swagger';
-import { Elysia, t } from 'elysia';
-import { auth } from '~/auth';
-import { env } from '~/env';
-import { tracing } from '~/tracing';
-import { event } from './routes/event-routes';
-import { events } from './routes/events';
-import { rental } from './routes/rental';
-import { scoutSessions } from './routes/scout-sessions';
-import { users } from './routes/users';
+import cors from "@elysiajs/cors";
+import swagger from "@elysiajs/swagger";
+import { Elysia, t } from "elysia";
+import { auth } from "~/auth";
+import { env } from "~/env";
+import { tracing } from "~/tracing";
+import { event } from "./routes/event-routes";
+import { events } from "./routes/events";
+import { rental } from "./routes/rental";
+import { scoutSessions } from "./routes/scout-sessions";
+import { users } from "./routes/users";
 
 const app = new Elysia()
   .use(tracing)
   .use(
     cors({
       origin: env.BETTER_AUTH_URL,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       credentials: true,
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ["Content-Type", "Authorization"],
     })
   )
   // .use(
@@ -36,11 +36,11 @@ const app = new Elysia()
   // )
   .use(
     swagger({
-      path: '/docs',
+      path: "/docs",
       documentation: {
         info: {
-          title: 'Vortex API',
-          version: '1.0.0',
+          title: "Gestão Som API",
+          version: "1.0.0",
         },
         // components: await OpenAPI.components,
         // paths: await OpenAPI.getPaths(),
@@ -48,23 +48,23 @@ const app = new Elysia()
     })
   )
   .mount(auth.handler)
-  .use(events)
-  .use(scoutSessions)
-  .use(users)
-  .use(event)
+  // .use(events)
+  // .use(scoutSessions)
+  // .use(users)
+  // .use(event)
   .use(rental)
-  .get('/', () => 'Hello Elysia', {
+  .get("/", () => "Hello Elysia", {
     detail: {
-      summary: 'API Health Check',
-      description: 'Returns a simple greeting to verify the API is running',
-      operationId: 'healthCheck',
+      summary: "API Health Check",
+      description: "Returns a simple greeting to verify the API is running",
+      operationId: "healthCheck",
     },
     response: {
-      200: t.String({ description: 'API greeting message' }),
+      200: t.String({ description: "API greeting message" }),
     },
   })
   .listen({
-    hostname: '0.0.0.0',
+    hostname: "0.0.0.0",
     port: env.PORT,
   });
 
