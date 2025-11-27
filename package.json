@@ -45,5 +45,8 @@
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
       "npx ultracite format"
     ]
+  },
+  "prisma": {
+    "schema": "./prisma/schema"
   }
 }

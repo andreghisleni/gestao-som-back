@@ -1,0 +1,65 @@
+// Schema separado apenas com modelos do domínio de locação (sound & lighting rental)
+
+model Equipment {
+  id               String  @id @default(uuid())
+  name             String
+  category         String
+  purchasePrice    Decimal
+  rentalPercentage Float
+  baseRentalPrice  Decimal
+  stockTotal       Int
+
+  createdById String
+  createdBy   User         @relation(fields: [createdById], references: [id])
+  budgetItems BudgetItem[]
+
+  @@map("equipment")
+}
+
+enum BudgetStatus {
+  DRAFT
+  CONFIRMED
+}
+
+model Budget {
+  id         String       @id @default(uuid())
+  clientName String
+  eventDate  DateTime
+  status     BudgetStatus @default(DRAFT)
+  totalValue Decimal
+  discount   Decimal      @default(0)
+  finalValue Decimal
+  createdAt  DateTime     @default(now())
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+
+  sections BudgetSection[]
+
+  @@map("budgets")
+}
+
+model BudgetSection {
+  id       String @id @default(uuid())
+  name     String
+  budgetId String
+  budget   Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  items BudgetItem[]
+
+  @@map("budget_sections")
+}
+
+model BudgetItem {
+  id          String  @id @default(uuid())
+  sectionId   String
+  equipmentId String
+  quantity    Int
+  unitPrice   Decimal
+  subtotal    Decimal
+
+  section   BudgetSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  equipment Equipment     @relation(fields: [equipmentId], references: [id], onDelete: Restrict)
+
+  @@map("budget_items")
+}
