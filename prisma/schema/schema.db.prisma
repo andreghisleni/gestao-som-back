@@ -1,38 +1,59 @@
-// Schema separado apenas com modelos do domínio de locação (sound & lighting rental)
+// --- MÓDULO DE LOCAÇÃO (RENTAL) ---
 
-model Equipment {
-  id               String  @id @default(uuid())
-  name             String
-  category         String
-  purchasePrice    Decimal
-  rentalPercentage Float
-  baseRentalPrice  Decimal
-  stockTotal       Int
+model Category {
+  id            String @id @default(cuid())
+  name          String @unique // Ex: "Som", "Iluminação"
+  rentalPercent Float  @map("rental_percent") // Mantemos Float para % (ex: 4.0)
 
-  createdById String
-  createdBy   User         @relation(fields: [createdById], references: [id])
-  budgetItems BudgetItem[]
+  equipments Equipment[]
 
-  @@map("equipment")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("categories")
 }
 
-enum BudgetStatus {
-  DRAFT
-  CONFIRMED
+model Equipment {
+  id   String @id @default(cuid())
+  name String
+
+  categoryId String   @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  // USANDO DECIMAL (Precision 10, Scale 2 -> até 99.999.999,99)
+  purchasePrice Decimal  @map("purchase_price") @db.Decimal(10, 2)
+  rentalPrice   Decimal? @map("rental_price") @db.Decimal(10, 2)
+
+  stockQuantity Int @default(1) @map("stock_quantity")
+
+  budgetItems BudgetItem[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  @@map("equipments")
 }
 
 model Budget {
-  id         String       @id @default(uuid())
-  clientName String
-  eventDate  DateTime
-  status     BudgetStatus @default(DRAFT)
-  totalValue Decimal
-  discount   Decimal      @default(0)
-  finalValue Decimal
-  createdAt  DateTime     @default(now())
+  id         String   @id @default(cuid())
+  clientName String   @map("client_name")
+  eventDate  DateTime @map("event_date")
+  status     String   @default("DRAFT")
 
-  createdById String
-  createdBy   User   @relation(fields: [createdById], references: [id])
+  // TOTAIS EM DECIMAL
+  totalValue    Decimal @default(0) @map("total_value") @db.Decimal(10, 2)
+  discount      Decimal @default(0) @db.Decimal(10, 2)
+  laborCost     Decimal @default(0) @map("labor_cost") @db.Decimal(10, 2)
+  transportCost Decimal @default(0) @map("transport_cost") @db.Decimal(10, 2)
+  finalValue    Decimal @default(0) @map("final_value") @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
 
   sections BudgetSection[]
 
@@ -40,9 +61,10 @@ model Budget {
 }
 
 model BudgetSection {
-  id       String @id @default(uuid())
-  name     String
-  budgetId String
+  id   String @id @default(cuid())
+  name String // Ex: "Cerimônia"
+
+  budgetId String @map("budget_id")
   budget   Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
 
   items BudgetItem[]
@@ -51,15 +73,17 @@ model BudgetSection {
 }
 
 model BudgetItem {
-  id          String  @id @default(uuid())
-  sectionId   String
-  equipmentId String
-  quantity    Int
-  unitPrice   Decimal
-  subtotal    Decimal
+  id          String        @id @default(cuid())
+  sectionId   String        @map("section_id")
+  section     BudgetSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  equipmentId String        @map("equipment_id")
+  equipment   Equipment     @relation(fields: [equipmentId], references: [id])
 
-  section   BudgetSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  equipment Equipment     @relation(fields: [equipmentId], references: [id], onDelete: Restrict)
+  quantity Int
+
+  // Snapshot do preço
+  unitPrice Decimal @map("unit_price") @db.Decimal(10, 2)
+  subtotal  Decimal @db.Decimal(10, 2)
 
   @@map("budget_items")
 }
