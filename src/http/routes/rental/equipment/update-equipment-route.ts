@@ -1,91 +1,85 @@
-import Elysia, { t } from "elysia";
-import { authMacro } from "~/auth";
-import { prisma } from "~/db/client";
+import { Prisma } from '@db/client';
+import Elysia, { t } from 'elysia';
+import { authMacro } from '~/auth';
+import { prisma } from '~/db/client';
+
+const updateEquipmentBodySchema = t.Object(
+  {
+    name: t.Optional(t.String()),
+    categoryId: t.Optional(t.String({ format: 'uuid' })),
+    purchasePrice: t.Optional(t.Number({ minimum: 0 })),
+    stockQuantity: t.Optional(t.Number({ minimum: 0 })),
+  },
+  {
+    description: 'Schema for updating equipment',
+  }
+);
+
+const equipmentParamsSchema = t.Object({
+  id: t.String({ format: 'uuid' }),
+});
 
 export const updateEquipmentRoute = new Elysia().macro(authMacro).put(
-  "/:id",
-  async ({ params, body, set }) => {
-    const { id } = params as { id: string };
+  '/:id',
+  async ({ body, params, set }) => {
+    const equipment = await prisma.equipment.findUnique({
+      where: { id: params.id },
+      include: { category: true },
+    });
+
+    if (!equipment) {
+      set.status = 404;
+      return { error: 'Equipment not found' };
+    }
+
+    // Preparar dados para atualização
+    const dataToUpdate = { ...body };
+
+    // LÓGICA DE RECÁLCULO: Se mudou Preço ou Categoria, recalcula o rentalPrice
+    if (body.purchasePrice !== undefined || body.categoryId !== undefined) {
+      const priceDecimal =
+        body.purchasePrice !== undefined
+          ? new Prisma.Decimal(body.purchasePrice)
+          : equipment.purchasePrice;
+
+      let rentalPercent = equipment.category.rentalPercent;
+
+      // Se mudou a categoria, busca a nova porcentagem
+      if (body.categoryId && body.categoryId !== equipment.categoryId) {
+        const newCategory = await prisma.category.findUnique({
+          where: { id: body.categoryId },
+        });
+        if (!newCategory) {
+          set.status = 400;
+          return { error: 'New Category not found' };
+        }
+        rentalPercent = newCategory.rentalPercent;
+      }
+
+      // Novo Preço de Locação
+      dataToUpdate.rentalPrice = priceDecimal.mul(rentalPercent).div(100);
+      dataToUpdate.purchasePrice = priceDecimal;
+    }
 
     await prisma.equipment.update({
-      where: { id },
-      data: {
-        name: body.name,
-        category: body.category,
-        purchasePrice:
-          body.purchasePrice != null ? String(body.purchasePrice) : undefined,
-        rentalPercentage: body.rentalPercentage,
-        baseRentalPrice:
-          body.purchasePrice != null && body.rentalPercentage != null
-            ? String(body.purchasePrice * (body.rentalPercentage / 100))
-            : undefined,
-        stockTotal: body.stockTotal,
-      },
+      where: { id: params.id },
+      data: dataToUpdate,
     });
 
     set.status = 201;
-    return { message: "Equipment updated successfully" };
   },
   {
     auth: true,
-    params: t.Object(
-      {
-        id: t.String({
-          description: "Equipment ID",
-        }),
-      },
-      {
-        description: "Parameters for updating equipment",
-      }
-    ),
-    body: t.Object(
-      {
-        name: t.Optional(
-          t.String({
-            description: "Equipment name",
-          })
-        ),
-        category: t.Optional(
-          t.String({
-            description: "Equipment category",
-          })
-        ),
-        purchasePrice: t.Optional(
-          t.Number({
-            description: "Purchase price as number",
-          })
-        ),
-        rentalPercentage: t.Optional(
-          t.Number({
-            description: "Rental percentage",
-          })
-        ),
-        stockTotal: t.Optional(
-          t.Number({
-            description: "Total stock available",
-          })
-        ),
-      },
-      {
-        description: "Body for updating equipment",
-      }
-    ),
+    params: equipmentParamsSchema,
+    body: updateEquipmentBodySchema,
     response: {
-      201: t.Object(
-        {
-          message: t.String({
-            description: "Success message",
-          }),
-        },
-        {
-          description: "Response after updating equipment",
-        }
-      ),
+      201: t.Void({ description: 'Equipment updated successfully' }),
+      404: t.Object({ error: t.String() }),
+      400: t.Object({ error: t.String() }),
     },
-
     detail: {
-      summary: "Update an existing equipment",
-      operationId: "updateEquipment",
+      summary: 'Update equipment (recalculates rental price if needed)',
+      operationId: 'updateEquipment',
     },
   }
 );

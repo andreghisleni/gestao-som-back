@@ -1,9 +1,9 @@
 /** biome-ignore-all lint/suspicious/noConsole: <explanation> */
-import {
-  PrismaClient,
-} from '@prisma/client';
+// import {
+//   PrismaClient,
+// } from '@prisma/client';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 async function main() {
   // await prisma.scoutSession.createMany({

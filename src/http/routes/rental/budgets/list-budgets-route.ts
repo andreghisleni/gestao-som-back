@@ -1,158 +1,124 @@
-import type { BudgetStatus, Prisma } from "@prisma/client";
-import type { Static } from "@sinclair/typebox";
-import Elysia, { t } from "elysia";
-import { prisma } from "~/db/client";
+import type { Prisma } from '@db/client';
+import Elysia, { t } from 'elysia';
+import { authMacro } from '~/auth';
+import { prisma } from '~/db/client';
 
-const QuerySchema = t.Object({
-  "f.filter": t.Optional(t.String()),
-  "p.page": t.Optional(t.Number({ default: 1 })),
-  "p.pageSize": t.Optional(t.Number({ default: 20 })),
-  "f.status": t.Optional(t.Union([t.Literal("DRAFT"), t.Literal("CONFIRMED")])),
-  "ob.createdAt": t.Optional(t.Union([t.Literal("asc"), t.Literal("desc")])),
-  "ob.finalValue": t.Optional(t.Union([t.Literal("asc"), t.Literal("desc")])),
-  "ob.clientName": t.Optional(t.Union([t.Literal("asc"), t.Literal("desc")])),
-});
+export const orderTypeSchema = t.Union([t.Literal('asc'), t.Literal('desc')]);
 
-type Query = Static<typeof QuerySchema>;
-
-const BudgetShape = t.Object(
+// Schema para o modelo Budget (Resumo)
+const budgetListSchema = t.Object(
   {
-    id: t.String({
-      description: "Budget ID",
-    }),
-    clientName: t.String({
-      description: "Name of the client for the budget",
-    }),
-    status: t.String({
-      description: "Current status of the budget",
-    }),
-    totalValue: t.Number({
-      description: "Total value of the budget before discount",
-    }),
-    finalValue: t.Number({
-      description: "Final value of the budget after discount",
-    }),
-    discount: t.Number({
-      description: "Discount applied to the budget",
-    }),
-    createdAt: t.Date({
-      description: "Date when the budget was created",
+    id: t.String({ format: 'uuid' }),
+    clientName: t.String(),
+    eventDate: t.Date(),
+    status: t.String(),
+    // Valores monetários (Numbers na API)
+    totalValue: t.Number(),
+    discount: t.Number(),
+    finalValue: t.Number(),
+    laborCost: t.Number(),
+    transportCost: t.Number(),
+    createdAt: t.Date(),
+    updatedAt: t.Date(),
+    // Opcional: Info de quem criou
+    user: t.Object({
+      id: t.String(),
+      name: t.String(),
     }),
   },
   {
-    description: "Shape of a budget in the list of budgets",
+    description: 'Schema for budget summary listing',
   }
 );
 
-export const listBudgetsRoute = new Elysia().get(
-  "/",
-  async ({ query }: { query: Query }) => {
-    const page = Number(query["p.page"] ?? 1);
-    const pageSize = Number(query["p.pageSize"] ?? 20);
-    const offset = (Math.max(page, 1) - 1) * pageSize;
+export const listBudgetsRoute = new Elysia().macro(authMacro).get(
+  '/',
+  async ({ query }) => {
+    const orderBy = [
+      query?.['ob.clientName'] && { clientName: query?.['ob.clientName'] },
+      query?.['ob.eventDate'] && { eventDate: query?.['ob.eventDate'] },
+      query?.['ob.status'] && { status: query?.['ob.status'] },
+      query?.['ob.finalValue'] && { finalValue: query?.['ob.finalValue'] },
+      query?.['ob.createdAt']
+        ? { createdAt: query?.['ob.createdAt'] }
+        : { createdAt: 'desc' },
+    ];
 
-    const filters: Prisma.BudgetWhereInput[] = [];
+    const orFilters: Prisma.BudgetWhereInput[] = [
+      {
+        clientName: {
+          contains: query?.['f.filter'],
+          mode: 'insensitive',
+        },
+      },
+      {
+        status: {
+          contains: query?.['f.filter'],
+          mode: 'insensitive',
+        },
+      },
+    ];
 
-    if (query["f.filter"]) {
-      filters.push({
-        clientName: { contains: query["f.filter"], mode: "insensitive" },
-      });
-    }
+    const where: Prisma.BudgetWhereInput = {
+      OR: query?.['f.filter'] ? orFilters : undefined,
+    };
 
-    if (query["f.status"]) {
-      filters.push({ status: query["f.status"] as BudgetStatus });
-    }
-
-    const where: Prisma.BudgetWhereInput = filters.length
-      ? { AND: filters }
-      : {};
-
-    // Ordenação: priorizar parâmetros ob.* como no get-members-route
-    let orderBy: Prisma.BudgetOrderByWithRelationInput = { createdAt: "desc" };
-
-    if (query["ob.finalValue"]) {
-      orderBy = {
-        finalValue: query["ob.finalValue"],
-      } as Prisma.BudgetOrderByWithRelationInput;
-    } else if (query["ob.clientName"]) {
-      orderBy = {
-        clientName: query["ob.clientName"],
-      } as Prisma.BudgetOrderByWithRelationInput;
-    } else if (query["ob.createdAt"]) {
-      orderBy = {
-        createdAt: query["ob.createdAt"],
-      } as Prisma.BudgetOrderByWithRelationInput;
-    }
-
-    const [rows, totalCount] = await Promise.all([
+    const [budgets, total] = await prisma.$transaction([
       prisma.budget.findMany({
         where,
-        skip: offset,
-        take: pageSize,
-        orderBy: [orderBy],
+        include: {
+          user: {
+            select: { id: true, name: true },
+          },
+        },
+        take: query?.['p.pageSize'] ?? 20,
+        skip:
+          ((query?.['p.page'] ?? 1) - 1) * (query?.['p.pageSize'] ?? 20) ||
+          undefined,
+        orderBy: [...orderBy.filter((o) => o !== undefined)],
       }),
       prisma.budget.count({ where }),
     ]);
 
-    const data = rows.map((b) => ({
-      id: b.id,
-      clientName: b.clientName,
-      status: String(b.status),
-      totalValue: Number(
-        String((b as unknown as { totalValue?: unknown }).totalValue ?? 0)
-      ),
-      finalValue: Number(
-        String((b as unknown as { finalValue?: unknown }).finalValue ?? 0)
-      ),
-      discount: Number(
-        String((b as unknown as { discount?: unknown }).discount ?? 0)
-      ),
-      createdAt: b.createdAt,
-    }));
-
     return {
-      data,
+      data: budgets,
       meta: {
-        total: totalCount,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalCount / pageSize),
+        total,
+        page: query?.['p.page'] ?? 1,
+        pageSize: query?.['p.pageSize'] ?? 20,
+        totalPages: Math.ceil(total / ((query?.['p.pageSize'] ?? 20) || 1)),
       },
     };
   },
   {
-    query: QuerySchema,
-    response: t.Object(
-      {
-        data: t.Array(BudgetShape),
-        meta: t.Object(
-          {
-            total: t.Number({
-              description: "Total number of budgets matching the query",
-            }),
-            page: t.Number({
-              description: "Current page number",
-            }),
-            pageSize: t.Number({
-              description: "Number of budgets per page",
-            }),
-            totalPages: t.Number({
-              description: "Total number of pages",
-            }),
-          },
-          {
-            description: "Metadata about the pagination",
-          }
-        ),
-      },
-      {
-        description:
-          "Response containing the list of budgets with pagination metadata",
-      }
-    ),
+    auth: true,
+    query: t.Object({
+      'f.filter': t.Optional(
+        t.String({
+          description: 'Filter by client name or status',
+        })
+      ),
+      'p.page': t.Optional(t.Number({ default: 1 })),
+      'p.pageSize': t.Optional(t.Number({ default: 20 })),
+      // Ordenações
+      'ob.clientName': t.Optional(orderTypeSchema),
+      'ob.eventDate': t.Optional(orderTypeSchema),
+      'ob.status': t.Optional(orderTypeSchema),
+      'ob.finalValue': t.Optional(orderTypeSchema),
+      'ob.createdAt': t.Optional(orderTypeSchema),
+    }),
+    response: t.Object({
+      data: t.Array(budgetListSchema),
+      meta: t.Object({
+        total: t.Number(),
+        page: t.Number(),
+        pageSize: t.Number(),
+        totalPages: t.Number(),
+      }),
+    }),
     detail: {
-      summary: "Get all budgets",
-      operationId: "getBudgets",
+      summary: 'List all rental budgets',
+      operationId: 'listBudgets',
     },
   }
 );

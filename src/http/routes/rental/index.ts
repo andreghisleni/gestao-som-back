@@ -1,11 +1,10 @@
 import Elysia from 'elysia';
-import { budgets } from './budgets/index';
-import { equipment } from './equipment/index';
+import { budgetRoutes } from './budgets';
+import { categoriesRoutes } from './categories';
+import { equipmentRoutes } from './equipment';
 
-export const rental = new Elysia({
-  prefix: '/rental',
-  name: 'Rental',
-  tags: ['Rental'],
-})
-  .use(equipment)
-  .use(budgets);
+export const rentalRoutes = new Elysia({ prefix: '/rental' })
+  .group('/categories', (app) => app.use(categoriesRoutes))
+  .group('/equipments', (app) => app.use(equipmentRoutes))
+  .group('/budgets', (app) => app.use(budgetRoutes));
+

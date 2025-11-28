@@ -1,62 +1,62 @@
-import Elysia, { t } from "elysia";
-import { authMacro } from "~/auth";
-import { prisma } from "~/db/client";
+import { Prisma } from '@db/client';
+import Elysia, { t } from 'elysia';
+import { authMacro } from '~/auth';
+import { prisma } from '~/db/client';
+
+const createEquipmentBodySchema = t.Object(
+  {
+    name: t.String(),
+    categoryId: t.String({ format: 'uuid' }),
+    purchasePrice: t.Number({ minimum: 0 }),
+    stockQuantity: t.Number({ minimum: 0 }),
+  },
+  {
+    description: 'Schema for creating a new equipment',
+  }
+);
 
 export const createEquipmentRoute = new Elysia().macro(authMacro).post(
-  "/",
-  async ({ user, body }) => {
-    const { name, category, purchasePrice, rentalPercentage, stockTotal } =
-      body;
+  '/',
+  async ({ body, set }) => {
+    const category = await prisma.category.findUnique({
+      where: { id: body.categoryId },
+    });
 
-    const baseRentalPrice = purchasePrice * (rentalPercentage / 100);
+    if (!category) {
+      set.status = 404;
+      return { error: 'Category not found' };
+    }
 
-    const created = await prisma.equipment.create({
+    // Converter input number para Decimal para cálculo preciso
+    const purchasePriceDecimal = new Prisma.Decimal(body.purchasePrice);
+
+    // Cálculo: Preço * (Percentual / 100)
+    const rentalPriceCalculated = purchasePriceDecimal
+      .mul(category.rentalPercent)
+      .div(100);
+
+    await prisma.equipment.create({
       data: {
-        name,
-        category,
-        purchasePrice: purchasePrice.toString(),
-        rentalPercentage,
-        baseRentalPrice: baseRentalPrice.toString(),
-        stockTotal: stockTotal ?? 0,
-        createdById: user.id,
+        name: body.name,
+        categoryId: body.categoryId,
+        stockQuantity: body.stockQuantity,
+        purchasePrice: purchasePriceDecimal,
+        rentalPrice: rentalPriceCalculated,
       },
     });
 
-    return created;
+    set.status = 201;
   },
   {
     auth: true,
-    body: t.Object(
-      {
-        name: t.String({ description: "Equipment name" }),
-        category: t.String({ description: "Equipment category" }),
-        purchasePrice: t.Number({ description: "Purchase price as number" }),
-        rentalPercentage: t.Number({ description: "Rental percent" }),
-        stockTotal: t.Optional(
-          t.Number({
-            description: "Total stock available for rental",
-          })
-        ),
-      },
-      {
-        description: "Payload to create a new equipment",
-      }
-    ),
+    body: createEquipmentBodySchema,
     response: {
-      200: t.Object(
-        {
-          id: t.String({
-            description: "Created equipment ID",
-          }),
-        },
-        {
-          description: "Response containing the ID of the created equipment",
-        }
-      ),
+      201: t.Void({ description: 'Equipment created successfully' }),
+      404: t.Object({ error: t.String() }),
     },
     detail: {
-      summary: "Create a new equipment",
-      operationId: "createEquipment",
+      summary: 'Create a new equipment with auto-calculated rental price',
+      operationId: 'createEquipment',
     },
   }
 );
