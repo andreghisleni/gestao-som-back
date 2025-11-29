@@ -1,7 +1,7 @@
 // --- MÓDULO DE LOCAÇÃO (RENTAL) ---
 
 model Category {
-  id            String @id @default(cuid())
+  id            String @id @default(uuid())
   name          String @unique // Ex: "Som", "Iluminação"
   rentalPercent Float  @map("rental_percent") // Mantemos Float para % (ex: 4.0)
 
@@ -14,7 +14,7 @@ model Category {
 }
 
 model Equipment {
-  id   String @id @default(cuid())
+  id   String @id @default(uuid())
   name String
 
   categoryId String   @map("category_id")
@@ -37,7 +37,7 @@ model Equipment {
 }
 
 model Budget {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   clientName String   @map("client_name")
   eventDate  DateTime @map("event_date")
   status     String   @default("DRAFT")
@@ -61,7 +61,7 @@ model Budget {
 }
 
 model BudgetSection {
-  id   String @id @default(cuid())
+  id   String @id @default(uuid())
   name String // Ex: "Cerimônia"
 
   budgetId String @map("budget_id")
@@ -73,7 +73,7 @@ model BudgetSection {
 }
 
 model BudgetItem {
-  id          String        @id @default(cuid())
+  id          String        @id @default(uuid())
   sectionId   String        @map("section_id")
   section     BudgetSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   equipmentId String        @map("equipment_id")

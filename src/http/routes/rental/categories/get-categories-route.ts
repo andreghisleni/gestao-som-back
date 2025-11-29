@@ -10,7 +10,7 @@ export const orderTypeSchema = t.Union([t.Literal("asc"), t.Literal("desc")], {
 // Schema para o modelo Category
 const categorySchema = t.Object(
   {
-    id: t.String({ format: "uuid" }),
+    id: t.String(),
     name: t.String(),
     rentalPercent: t.Number(),
     createdAt: t.Date(),
@@ -22,12 +22,14 @@ const categorySchema = t.Object(
   }
 );
 
-export const listCategoriesRoute = new Elysia().macro(authMacro).get(
+export const getCategoriesRoute = new Elysia().macro(authMacro).get(
   "/",
   async ({ query }) => {
     const orderBy = [
       query?.["ob.name"] && { name: query?.["ob.name"] },
-      query?.["ob.rentalPercent"] && { rentalPercent: query?.["ob.rentalPercent"] },
+      query?.["ob.rentalPercent"] && {
+        rentalPercent: query?.["ob.rentalPercent"],
+      },
       query?.["ob.createdAt"]
         ? { createdAt: query?.["ob.createdAt"] }
         : { createdAt: "desc" },
@@ -95,8 +97,8 @@ export const listCategoriesRoute = new Elysia().macro(authMacro).get(
       }),
     }),
     detail: {
-      summary: "List all equipment categories",
-      operationId: "listCategories",
+      summary: "Get all equipment categories",
+      operationId: "getCategories",
     },
   }
 );

@@ -36,7 +36,7 @@ const budgetSchema = t.Object(
     finalValue: t.Number(),
     createdAt: t.Date(),
     updatedAt: t.Date(),
-    // Lista de Ambientes/Seções
+    // Geta de Ambientes/Seções
     sections: t.Array(budgetSectionSchema),
   },
   {

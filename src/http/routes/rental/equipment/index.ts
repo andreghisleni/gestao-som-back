@@ -1,11 +1,14 @@
-import Elysia from 'elysia';
-import { createEquipmentRoute } from './create-equipment-route';
-import { getEquipmentRoute } from './get-equipment-route';
-import { listEquipmentRoute } from './list-equipment-route';
-import { updateEquipmentRoute } from './update-equipment-route';
+import Elysia from "elysia";
+import { createEquipmentRoute } from "./create-equipment-route";
+import { getEquipmentRoute } from "./get-equipment-route";
+import { getEquipmentsRoute } from "./get-equipments-route";
+import { updateEquipmentRoute } from "./update-equipment-route";
 
-export const equipmentRoutes = new Elysia()
+export const equipmentRoutes = new Elysia({
+  prefix: "/equipments",
+  tags: ["Equipments"],
+})
   .use(createEquipmentRoute)
-  .use(listEquipmentRoute)
   .use(getEquipmentRoute)
+  .use(getEquipmentsRoute)
   .use(updateEquipmentRoute);

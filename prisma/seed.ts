@@ -1,326 +1,102 @@
+/** biome-ignore-all lint/nursery/noAwaitInLoop: <explanation> */
 /** biome-ignore-all lint/suspicious/noConsole: <explanation> */
-// import {
-//   PrismaClient,
-// } from '@prisma/client';
 
-// const prisma = new PrismaClient();
+import { prisma } from "~/db/client";
+import { Prisma } from "~/db/generated/prisma/client";
 
 async function main() {
-  // await prisma.scoutSession.createMany({
-  //   data: sessions.map(({ type, created_at, ...rest }) => ({
-  //     ...rest,
-  //     type: type as SessionType,
-  //     createdAt: created_at || new Date(),
-  //   })),
-  //   skipDuplicates: true,
-  // });
+  console.log("🌱 Iniciando o Seed do Banco de Dados...");
 
-  // const user = await prisma.user.findFirst();
+  // --- 1. DEFINIÇÃO DAS CATEGORIAS ---
+  const categoriesData = [
+    { name: "Som (Principal)", rentalPercent: 4.0 },
+    { name: "Áudio (Periféricos)", rentalPercent: 5.0 },
+    { name: "Áudio (Monitor)", rentalPercent: 4.0 },
+    { name: "Iluminação", rentalPercent: 7.0 },
+    { name: "Estrutura", rentalPercent: 7.0 },
+    { name: "Cabos", rentalPercent: 8.0 },
+  ];
 
-  // const checkPizzaExtraEvent = await prisma.event.findFirst({
-  //   where: { name: 'Pizza Extra 2024' },
-  // });
+  const categoriesMap = new Map<string, string>();
 
-  // if (checkPizzaExtraEvent) {
-  //   console.log('Event "Pizza Extra 2024" already exists.');
-  // } else {
-  //   const { members, tickets } = pizzaExtra;
-  //   const event = await prisma.event.create({
-  //     data: {
-  //       name: 'Pizza Extra 2024',
-  //       ownerId: user?.id,
-  //     },
-  //   });
+  for (const cat of categoriesData) {
+    const created = await prisma.category.upsert({
+      where: { name: cat.name },
+      update: { rentalPercent: cat.rentalPercent },
+      create: { name: cat.name, rentalPercent: cat.rentalPercent },
+    });
+    categoriesMap.set(cat.name, created.id);
+    console.log(`✅ Categoria criada/atualizada: ${cat.name}`);
+  }
 
-  //   await prisma.member.createMany({
-  //     data: members.map(
-  //       ({
-  //         id,
-  //         created_at,
-  //         session_id,
-  //         vision_id,
-  //         name,
-  //         clean_name,
-  //         register,
-  //       }) => ({
-  //         id,
-  //         eventId: event.id,
-  //         order: null,
-  //         visionId: vision_id,
-  //         name,
-  //         cleanName: clean_name,
-  //         register,
+  // --- 2. DEFINIÇÃO DOS EQUIPAMENTOS ---
+  // Formato: [Nome, Categoria, PreçoCompra (Number), Quantidade]
+  const equipmentsData: [string, string, number, number][] = [
+    // Som Principal (4%)
+    ['PA Sub 12" (par LR completo)', "Som (Principal)", 8000, 1],
+    ['PA Sub 18" (par LR + lines)', "Som (Principal)", 15_000, 1],
 
-  //         createdAt: created_at || new Date(),
-  //         sessionId: session_id,
-  //       })
-  //     ),
-  //     skipDuplicates: true,
-  //   });
+    // Periféricos (5%)
+    ["Mesa Digital Behringer XR18", "Áudio (Periféricos)", 7000, 1],
+    ["Mics Sem Fio Phenyx Pro (4un)", "Áudio (Periféricos)", 4800, 1],
+    ["Mics Com Fio Dylain (2un)", "Áudio (Periféricos)", 700, 1],
 
-  //   await prisma.ticket.createMany({
-  //     data: tickets.map(
-  //       ({ created_at, delivered_at, member_id, created, ...rest }) => ({
-  //         ...rest,
-  //         memberId: member_id,
-  //         eventId: event.id,
-  //         createdAt: created_at || new Date(),
-  //         deliveredAt: delivered_at || null,
-  //         created: created as TicketCreated,
-  //       })
-  //     ),
-  //     skipDuplicates: true,
-  //   });
+    // Monitor (4%)
+    ["Par Retornos Antigos", "Áudio (Monitor)", 3000, 1],
 
-  //   console.log('Created event:', event);
-  // }
+    // Iluminação (7%)
+    ["Par Leds (10un)", "Iluminação", 1500, 1],
+    ["Máquina Fumaça 2000W", "Iluminação", 800, 1],
+    ["Mesa DMX Artnet", "Iluminação", 800, 1],
+    ["Spyder", "Iluminação", 500, 1],
 
-  // const checkPizza2025Event = await prisma.event.findFirst({
-  //   where: { name: 'Pizza 2025' },
-  // });
+    // Estrutura (7%)
+    ["Estrutura Q20 (12m)", "Estrutura", 2000, 1],
 
-  // if (checkPizza2025Event) {
-  //   console.log('Event "Pizza 2025" already exists.');
-  // } else {
-  //   const event = await prisma.event.create({
-  //     data: {
-  //       name: 'Pizza 2025',
-  //       ownerId: user?.id,
-  //       ticketType: 'MULTIPLE_NUMERATIONS',
-  //       ticketRanges: {
-  //         createMany: {
-  //           data: [
-  //             {
-  //               type: 'Calabresa',
-  //               start: 1,
-  //               end: 1000,
-  //             },
-  //             {
-  //               type: 'Mista',
-  //               start: 2000,
-  //               end: 3000,
-  //             },
-  //           ],
-  //           skipDuplicates: true,
-  //         },
-  //       },
-  //     },
-  //   });
+    // Cabos (8%)
+    ["Multicabo 12 Vias", "Cabos", 600, 1],
+    ["Cabos Diversos", "Cabos", 2000, 1],
+  ];
 
-  //   await prisma.member.createMany({
-  //     data: pizza.members.map(
-  //       ({
-  //         id,
-  //         created_at,
-  //         session_id,
-  //         vision_id,
-  //         name,
-  //         clean_name,
-  //         register,
-  //         is_all_confirmed_but_not_yet_fully_paid,
-  //       }) => ({
-  //         id,
-  //         eventId: event.id,
-  //         order: null,
-  //         visionId: vision_id,
-  //         name,
-  //         cleanName: clean_name,
-  //         register,
+  for (const [name, catName, price, qty] of equipmentsData) {
+    const categoryId = categoriesMap.get(catName);
 
-  //         createdAt: created_at || new Date(),
-  //         sessionId: session_id,
-  //         isAllConfirmedButNotYetFullyPaid:
-  //           is_all_confirmed_but_not_yet_fully_paid,
-  //       })
-  //     ),
-  //     skipDuplicates: true,
-  //   });
+    if (!categoryId) {
+      console.warn(`⚠️ Categoria não encontrada para: ${name}`);
+      continue;
+    }
 
-  //   await prisma.ticketRange.createMany({
-  //     data: pizza.ticketRanges.map(
-  //       ({ created_at, member_id, generated_at, deleted_at, ...rest }) => ({
-  //         ...rest,
-  //         eventId: event.id,
-  //         createdAt: created_at || new Date(),
-  //         memberId: member_id,
-  //         generatedAt: generated_at || null,
-  //         deletedAt: deleted_at || null,
-  //       })
-  //     ),
-  //     skipDuplicates: true,
-  //   });
+    // Busca a porcentagem para calcular o aluguel
+    const category = categoriesData.find((c) => c.name === catName);
+    const percent = category?.rentalPercent || 0;
 
-  //   await prisma.ticket.createMany({
-  //     data: pizza.tickets.map(
-  //       ({
-  //         created_at,
-  //         delivered_at,
-  //         member_id,
-  //         created,
-  //         ticket_range_id,
-  //         ...rest
-  //       }) => ({
-  //         ...rest,
-  //         memberId: member_id,
-  //         eventId: event.id,
-  //         createdAt: created_at || new Date(),
-  //         deliveredAt: delivered_at || null,
-  //         created: created as TicketCreated,
-  //         oTicketRangeId: ticket_range_id || null,
-  //       })
-  //     ),
-  //     skipDuplicates: true,
-  //   });
+    // Cálculos com Prisma.Decimal
+    const purchasePriceDecimal = new Prisma.Decimal(price);
+    const rentalPriceDecimal = purchasePriceDecimal.mul(percent).div(100);
 
-  //   await prisma.payment.createMany({
-  //     data: pizza.ticketPayments.map(
-  //       ({
-  //         created_at,
-  //         member_id,
-  //         paid_at,
-  //         updated_at,
-  //         vision_id,
-  //         deleted_at,
-  //         deleted_by,
-  //         type,
-  //         ...rest
-  //       }) => ({
-  //         ...rest,
-  //         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  //         type: type as any,
-  //         visionId: vision_id,
-  //         payedAt: paid_at || undefined,
-  //         memberId: member_id,
-  //         createdAt: created_at || new Date(),
-  //         updatedAt: updated_at || new Date(),
-  //         deletedAt: deleted_at || null,
-  //         deletedBy: null,
-  //       })
-  //     ),
-  //     skipDuplicates: true,
-  //   });
+    await prisma.equipment.create({
+      data: {
+        name,
+        categoryId,
+        stockQuantity: qty,
+        purchasePrice: purchasePriceDecimal,
+        rentalPrice: rentalPriceDecimal,
+      },
+    });
 
-  //   console.log('Created event:', event);
-  // }
+    console.log(
+      `📦 Equipamento criado: ${name} (Aluguel: R$ ${rentalPriceDecimal})`
+    );
+  }
 
-  // const checkFeijoada2025Event = await prisma.event.findFirst({
-  //   where: { name: 'Feijoada 2025' },
-  // });
-
-  // if (checkFeijoada2025Event) {
-  //   console.log('Event "Feijoada 2025" already exists.');
-  // } else {
-  //   const event = await prisma.event.create({
-  //     data: {
-  //       name: 'Feijoada 2025',
-  //       ownerId: user?.id,
-  //     },
-  //   });
-
-  //   await prisma.member.createMany({
-  //     data: feijoada.members.map(
-  //       ({
-  //         id,
-  //         created_at,
-  //         session_id,
-  //         vision_id,
-  //         name,
-  //         clean_name,
-  //         register,
-  //         is_all_confirmed_but_not_yet_fully_paid,
-  //       }) => ({
-  //         id,
-  //         eventId: event.id,
-  //         order: null,
-  //         visionId: vision_id,
-  //         name,
-  //         cleanName: clean_name,
-  //         register,
-
-  //         createdAt: created_at || new Date(),
-  //         sessionId: session_id,
-  //         isAllConfirmedButNotYetFullyPaid:
-  //           is_all_confirmed_but_not_yet_fully_paid,
-  //       })
-  //     ),
-  //     skipDuplicates: true,
-  //   });
-
-  //   await prisma.ticketRange.createMany({
-  //     data: feijoada.ticketRanges.map(
-  //       ({ created_at, member_id, generated_at, deleted_at, ...rest }) => ({
-  //         ...rest,
-  //         eventId: event.id,
-  //         createdAt: created_at || new Date(),
-  //         memberId: member_id,
-  //         generatedAt: generated_at || null,
-  //         deletedAt: deleted_at || null,
-  //       })
-  //     ),
-  //     skipDuplicates: true,
-  //   });
-
-  //   await prisma.ticket.createMany({
-  //     data: feijoada.tickets.map(
-  //       ({
-  //         created_at,
-  //         delivered_at,
-  //         member_id,
-  //         created,
-  //         ticket_range_id,
-  //         ...rest
-  //       }) => ({
-  //         ...rest,
-  //         memberId: member_id,
-  //         eventId: event.id,
-  //         createdAt: created_at || new Date(),
-  //         deliveredAt: delivered_at || null,
-  //         created: created as TicketCreated,
-  //         oTicketRangeId: ticket_range_id || null,
-  //       })
-  //     ),
-  //     skipDuplicates: true,
-  //   });
-
-  //   await prisma.payment.createMany({
-  //     data: feijoada.ticketPayments.map(
-  //       ({
-  //         created_at,
-  //         member_id,
-  //         paid_at,
-  //         updated_at,
-  //         vision_id,
-  //         deleted_at,
-  //         deleted_by,
-  //         type,
-  //         ...rest
-  //       }) => ({
-  //         ...rest,
-  //         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  //         type: type as any,
-  //         visionId: vision_id,
-  //         payedAt: paid_at || undefined,
-  //         memberId: member_id,
-  //         createdAt: created_at || new Date(),
-  //         updatedAt: updated_at || new Date(),
-  //         deletedAt: deleted_at || null,
-  //         deletedBy: null,
-  //       })
-  //     ),
-  //     skipDuplicates: true,
-  //   });
-
-  //   console.log('Created event:', event);
-  // }
+  console.log("🏁 Seed finalizado com sucesso!");
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    // biome-ignore lint/suspicious/noConsole: <explanation>
+  .catch((e) => {
     console.error(e);
-    await prisma.$disconnect();
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });
