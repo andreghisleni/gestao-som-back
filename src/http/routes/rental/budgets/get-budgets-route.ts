@@ -81,7 +81,14 @@ export const getBudgetsRoute = new Elysia().macro(authMacro).get(
     ]);
 
     return {
-      data: budgets,
+      data: budgets.map((budget) => ({
+        ...budget,
+        totalValue: budget.totalValue.toNumber(),
+        discount: budget.discount.toNumber(),
+        laborCost: budget.laborCost.toNumber(),
+        transportCost: budget.transportCost.toNumber(),
+        finalValue: budget.finalValue.toNumber(),
+      })),
       meta: {
         total,
         page: query?.["p.page"] ?? 1,

@@ -1,25 +1,25 @@
-import { Prisma } from '@db/client';
-import Elysia, { t } from 'elysia';
-import { authMacro } from '~/auth';
-import { prisma } from '~/db/client';
+import { Prisma } from "@db/client";
+import Elysia, { t } from "elysia";
+import { authMacro } from "~/auth";
+import { prisma } from "~/db/client";
 
 const sectionParamsSchema = t.Object({
-  sectionId: t.String({ format: 'uuid' }),
+  sectionId: t.String({ format: "uuid" }),
 });
 
 const createItemBodySchema = t.Object(
   {
-    equipmentId: t.String({ format: 'uuid' }),
+    equipmentId: t.String({ format: "uuid" }),
     quantity: t.Number({ minimum: 1 }),
     customUnitPrice: t.Optional(t.Number()),
   },
   {
-    description: 'Schema for adding an equipment to a section',
+    description: "Schema for adding an equipment to a section",
   }
 );
 
 export const createBudgetItemRoute = new Elysia().macro(authMacro).post(
-  '/sections/:sectionId/items',
+  "/sections/:sectionId/items",
   async ({ body, params, set }) => {
     const section = await prisma.budgetSection.findUnique({
       where: { id: params.sectionId },
@@ -28,7 +28,7 @@ export const createBudgetItemRoute = new Elysia().macro(authMacro).post(
 
     if (!section) {
       set.status = 404;
-      return { error: 'Budget Section not found' };
+      return { error: "Budget Section not found" };
     }
 
     const equipment = await prisma.equipment.findUnique({
@@ -37,7 +37,24 @@ export const createBudgetItemRoute = new Elysia().macro(authMacro).post(
 
     if (!equipment) {
       set.status = 404;
-      return { error: 'Equipment not found' };
+      return { error: "Equipment not found" };
+    }
+
+    if (equipment.stockQuantity < body.quantity) {
+      set.status = 400;
+      return { error: "Insufficient stock for the requested equipment" };
+    }
+
+    const checkExistingItem = await prisma.budgetItem.findFirst({
+      where: {
+        sectionId: params.sectionId,
+        equipmentId: body.equipmentId,
+      },
+    });
+
+    if (checkExistingItem) {
+      set.status = 400;
+      return { error: "This equipment is already added to the section" };
     }
 
     // Lógica do Preço Unitário (Snapshot)
@@ -82,12 +99,12 @@ export const createBudgetItemRoute = new Elysia().macro(authMacro).post(
     params: sectionParamsSchema,
     body: createItemBodySchema,
     response: {
-      201: t.Void({ description: 'Item added and budget updated' }),
+      201: t.Void({ description: "Item added and budget updated" }),
       404: t.Object({ error: t.String() }),
     },
     detail: {
-      summary: 'Add equipment item to a budget section',
-      operationId: 'createBudgetItem',
+      summary: "Add equipment item to a budget section",
+      operationId: "createBudgetItem",
     },
   }
 );

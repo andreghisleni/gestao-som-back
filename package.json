@@ -10,7 +10,8 @@
     "db:m": "prisma migrate dev",
     "db:m:d": "prisma migrate deploy",
     "db:s": "prisma studio",
-    "db:seed": "bun run prisma/seed.ts"
+    "db:seed": "bun run prisma/seed.ts",
+    "db:seed2": "bun run prisma/seed-orcamento.ts"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.876.0",

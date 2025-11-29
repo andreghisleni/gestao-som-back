@@ -63,6 +63,10 @@ export const getBudgetRoute = new Elysia().macro(authMacro).get(
                   include: { category: true }, // Para mostrar nome e categoria no front
                 },
               },
+              orderBy: [
+                { equipment: { categoryId: "asc" } },
+                { equipment: { name: "asc" } },
+              ], // Opcional: ordenar itens
             },
           },
         },
@@ -74,7 +78,22 @@ export const getBudgetRoute = new Elysia().macro(authMacro).get(
       return { error: "Budget not found" };
     }
 
-    return budget;
+    return {
+      ...budget,
+      totalValue: budget.totalValue.toNumber(),
+      discount: budget.discount.toNumber(),
+      laborCost: budget.laborCost.toNumber(),
+      transportCost: budget.transportCost.toNumber(),
+      finalValue: budget.finalValue.toNumber(),
+      sections: budget.sections.map((section) => ({
+        ...section,
+        items: section.items.map((item) => ({
+          ...item,
+          unitPrice: item.unitPrice.toNumber(),
+          subtotal: item.subtotal.toNumber(),
+        })),
+      })),
+    };
   },
   {
     auth: true,

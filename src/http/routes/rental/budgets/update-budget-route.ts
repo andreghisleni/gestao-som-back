@@ -1,12 +1,12 @@
-import { Prisma } from '@db/client';
-import Elysia, { t } from 'elysia';
-import { authMacro } from '~/auth';
-import { prisma } from '~/db/client';
+import { Prisma } from "@db/client";
+import Elysia, { t } from "elysia";
+import { authMacro } from "~/auth";
+import { prisma } from "~/db/client";
 
 const updateBudgetBodySchema = t.Object(
   {
     clientName: t.Optional(t.String()),
-    eventDate: t.Optional(t.String({ format: 'date-time' })),
+    eventDate: t.Optional(t.String({ format: "date-time" })),
     status: t.Optional(t.String()), // DRAFT, APPROVED, etc.
     // Custos Extras e Descontos
     discount: t.Optional(t.Number({ minimum: 0 })),
@@ -14,16 +14,16 @@ const updateBudgetBodySchema = t.Object(
     transportCost: t.Optional(t.Number({ minimum: 0 })),
   },
   {
-    description: 'Schema for updating budget header and extra costs',
+    description: "Schema for updating budget header and extra costs",
   }
 );
 
 const budgetParamsSchema = t.Object({
-  budgetId: t.String({ format: 'uuid' }),
+  budgetId: t.String({ format: "uuid" }),
 });
 
 export const updateBudgetRoute = new Elysia().macro(authMacro).put(
-  '/:budgetId',
+  "/:budgetId",
   async ({ body, params, set }) => {
     const budget = await prisma.budget.findUnique({
       where: { id: params.budgetId },
@@ -31,7 +31,7 @@ export const updateBudgetRoute = new Elysia().macro(authMacro).put(
 
     if (!budget) {
       set.status = 404;
-      return { error: 'Budget not found' };
+      return { error: "Budget not found" };
     }
 
     // Preparar atualização
@@ -76,7 +76,7 @@ export const updateBudgetRoute = new Elysia().macro(authMacro).put(
     }
 
     await prisma.budget.update({
-      where: { id: params.id },
+      where: { id: params.budgetId },
       data,
     });
 
@@ -87,12 +87,12 @@ export const updateBudgetRoute = new Elysia().macro(authMacro).put(
     params: budgetParamsSchema,
     body: updateBudgetBodySchema,
     response: {
-      201: t.Void({ description: 'Budget updated successfully' }),
+      201: t.Void({ description: "Budget updated successfully" }),
       404: t.Object({ error: t.String() }),
     },
     detail: {
-      summary: 'Update budget details and recalculate final value',
-      operationId: 'updateBudget',
+      summary: "Update budget details and recalculate final value",
+      operationId: "updateBudget",
     },
   }
 );
