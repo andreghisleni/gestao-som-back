@@ -9,6 +9,7 @@ RUN apt-get update -y && apt-get install -y openssl
 COPY package.json package.json
 COPY bun.lock bun.lock
 COPY tsconfig.json tsconfig.json
+COPY prisma.config.ts prisma.config.ts
 
 RUN bun install
 
@@ -21,7 +22,7 @@ ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 
 # Generate Prisma client with correct binary targets
-RUN bun db:g
+# RUN bun db:g
 RUN bun db:m:d
 
 COPY ./src ./src
@@ -49,8 +50,8 @@ RUN apt-get update -y && \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/server server
-COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
+# COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+# COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
 
 ENV NODE_ENV=production
 
