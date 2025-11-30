@@ -15,6 +15,7 @@ const equipmentSchema = t.Object(
       id: t.String(),
       name: t.String(),
       rentalPercent: t.Number(),
+      description: t.Optional(t.String()),
     }),
     // O hack do client.ts converte Decimal para Number, então usamos t.Number()
     purchasePrice: t.Number(),
@@ -86,11 +87,18 @@ export const getEquipmentsRoute = new Elysia().macro(authMacro).get(
     ]);
 
     return {
-      data: equipments.map(({ purchasePrice, rentalPrice, ...rest }) => ({
-        ...rest,
-        purchasePrice: purchasePrice.toNumber(),
-        rentalPrice: rentalPrice?.toNumber() ?? null,
-      })),
+      data: equipments.map(
+        ({ purchasePrice, rentalPrice, category, ...rest }) => ({
+          ...rest,
+          purchasePrice: purchasePrice.toNumber(),
+          rentalPrice: rentalPrice?.toNumber() ?? null,
+
+          category: {
+            ...category,
+            description: category.description || undefined,
+          },
+        })
+      ),
       meta: {
         total,
         page: query?.["p.page"] ?? 1,

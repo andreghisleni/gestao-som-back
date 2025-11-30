@@ -43,7 +43,15 @@ export const getEquipmentRoute = new Elysia().macro(authMacro).get(
       return { error: "Equipment not found" };
     }
 
-    return equipment;
+    return {
+      ...equipment,
+      purchasePrice: equipment.purchasePrice.toNumber(),
+      rentalPrice: equipment.rentalPrice?.toNumber() || 0,
+      category: {
+        ...equipment.category,
+        description: equipment.category.description || undefined,
+      },
+    };
   },
   {
     auth: true,

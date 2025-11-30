@@ -8,6 +8,7 @@ const categorySchema = t.Object(
     id: t.String({ format: "uuid" }),
     name: t.String(),
     rentalPercent: t.Number(),
+    description: t.Optional(t.String()),
     createdAt: t.Date(),
     updatedAt: t.Date(),
   },
@@ -32,7 +33,7 @@ export const getCategoryRoute = new Elysia().macro(authMacro).get(
       return { error: "Category not found" };
     }
 
-    return category;
+    return { ...category, description: category.description || undefined };
   },
   {
     auth: true,

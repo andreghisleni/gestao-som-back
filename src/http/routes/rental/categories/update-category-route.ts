@@ -7,6 +7,7 @@ const updateCategoryBodySchema = t.Object(
   {
     name: t.Optional(t.String()),
     rentalPercent: t.Optional(t.Number({ minimum: 0 })),
+    description: t.Optional(t.String()),
   },
   {
     description: "Schema for updating a category",

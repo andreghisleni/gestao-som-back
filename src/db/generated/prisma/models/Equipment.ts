@@ -541,10 +541,6 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type EquipmentCreateNestedOneWithoutBudgetItemsInput = {
   create?: Prisma.XOR<Prisma.EquipmentCreateWithoutBudgetItemsInput, Prisma.EquipmentUncheckedCreateWithoutBudgetItemsInput>
   connectOrCreate?: Prisma.EquipmentCreateOrConnectWithoutBudgetItemsInput

@@ -13,6 +13,7 @@ const categorySchema = t.Object(
     id: t.String(),
     name: t.String(),
     rentalPercent: t.Number(),
+    description: t.Optional(t.String()),
     createdAt: t.Date(),
     updatedAt: t.Date(),
     _count: t.Optional(t.Object({ equipments: t.Number() })), // Opcional: contar itens
@@ -64,7 +65,10 @@ export const getCategoriesRoute = new Elysia().macro(authMacro).get(
     ]);
 
     return {
-      data: categories,
+      data: categories.map((category) => ({
+        ...category,
+        description: category.description || undefined,
+      })),
       meta: {
         total,
         page: query?.["p.page"] ?? 1,
