@@ -13,6 +13,8 @@ const budgetItemSchema = t.Object({
     name: t.String(),
     category: t.Optional(t.Object({ name: t.String() })),
   }),
+  showInBudgetPrint: t.Boolean(),
+  description: t.Nullable(t.Optional(t.String())),
 });
 
 // Schema das Seções (Nível 2)

@@ -45,6 +45,8 @@ export type BudgetItemMinAggregateOutputType = {
   quantity: number | null
   unitPrice: runtime.Decimal | null
   subtotal: runtime.Decimal | null
+  showInBudgetPrint: boolean | null
+  description: string | null
 }
 
 export type BudgetItemMaxAggregateOutputType = {
@@ -54,6 +56,8 @@ export type BudgetItemMaxAggregateOutputType = {
   quantity: number | null
   unitPrice: runtime.Decimal | null
   subtotal: runtime.Decimal | null
+  showInBudgetPrint: boolean | null
+  description: string | null
 }
 
 export type BudgetItemCountAggregateOutputType = {
@@ -63,6 +67,8 @@ export type BudgetItemCountAggregateOutputType = {
   quantity: number
   unitPrice: number
   subtotal: number
+  showInBudgetPrint: number
+  description: number
   _all: number
 }
 
@@ -86,6 +92,8 @@ export type BudgetItemMinAggregateInputType = {
   quantity?: true
   unitPrice?: true
   subtotal?: true
+  showInBudgetPrint?: true
+  description?: true
 }
 
 export type BudgetItemMaxAggregateInputType = {
@@ -95,6 +103,8 @@ export type BudgetItemMaxAggregateInputType = {
   quantity?: true
   unitPrice?: true
   subtotal?: true
+  showInBudgetPrint?: true
+  description?: true
 }
 
 export type BudgetItemCountAggregateInputType = {
@@ -104,6 +114,8 @@ export type BudgetItemCountAggregateInputType = {
   quantity?: true
   unitPrice?: true
   subtotal?: true
+  showInBudgetPrint?: true
+  description?: true
   _all?: true
 }
 
@@ -200,6 +212,8 @@ export type BudgetItemGroupByOutputType = {
   quantity: number
   unitPrice: runtime.Decimal
   subtotal: runtime.Decimal
+  showInBudgetPrint: boolean
+  description: string | null
   _count: BudgetItemCountAggregateOutputType | null
   _avg: BudgetItemAvgAggregateOutputType | null
   _sum: BudgetItemSumAggregateOutputType | null
@@ -232,6 +246,8 @@ export type BudgetItemWhereInput = {
   quantity?: Prisma.IntFilter<"BudgetItem"> | number
   unitPrice?: Prisma.DecimalFilter<"BudgetItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFilter<"BudgetItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFilter<"BudgetItem"> | boolean
+  description?: Prisma.StringNullableFilter<"BudgetItem"> | string | null
   section?: Prisma.XOR<Prisma.BudgetSectionScalarRelationFilter, Prisma.BudgetSectionWhereInput>
   equipment?: Prisma.XOR<Prisma.EquipmentScalarRelationFilter, Prisma.EquipmentWhereInput>
 }
@@ -243,6 +259,8 @@ export type BudgetItemOrderByWithRelationInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
+  showInBudgetPrint?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   section?: Prisma.BudgetSectionOrderByWithRelationInput
   equipment?: Prisma.EquipmentOrderByWithRelationInput
 }
@@ -257,6 +275,8 @@ export type BudgetItemWhereUniqueInput = Prisma.AtLeast<{
   quantity?: Prisma.IntFilter<"BudgetItem"> | number
   unitPrice?: Prisma.DecimalFilter<"BudgetItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFilter<"BudgetItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFilter<"BudgetItem"> | boolean
+  description?: Prisma.StringNullableFilter<"BudgetItem"> | string | null
   section?: Prisma.XOR<Prisma.BudgetSectionScalarRelationFilter, Prisma.BudgetSectionWhereInput>
   equipment?: Prisma.XOR<Prisma.EquipmentScalarRelationFilter, Prisma.EquipmentWhereInput>
 }, "id">
@@ -268,6 +288,8 @@ export type BudgetItemOrderByWithAggregationInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
+  showInBudgetPrint?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.BudgetItemCountOrderByAggregateInput
   _avg?: Prisma.BudgetItemAvgOrderByAggregateInput
   _max?: Prisma.BudgetItemMaxOrderByAggregateInput
@@ -285,6 +307,8 @@ export type BudgetItemScalarWhereWithAggregatesInput = {
   quantity?: Prisma.IntWithAggregatesFilter<"BudgetItem"> | number
   unitPrice?: Prisma.DecimalWithAggregatesFilter<"BudgetItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalWithAggregatesFilter<"BudgetItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolWithAggregatesFilter<"BudgetItem"> | boolean
+  description?: Prisma.StringNullableWithAggregatesFilter<"BudgetItem"> | string | null
 }
 
 export type BudgetItemCreateInput = {
@@ -292,6 +316,8 @@ export type BudgetItemCreateInput = {
   quantity: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: boolean
+  description?: string | null
   section: Prisma.BudgetSectionCreateNestedOneWithoutItemsInput
   equipment: Prisma.EquipmentCreateNestedOneWithoutBudgetItemsInput
 }
@@ -303,6 +329,8 @@ export type BudgetItemUncheckedCreateInput = {
   quantity: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: boolean
+  description?: string | null
 }
 
 export type BudgetItemUpdateInput = {
@@ -310,6 +338,8 @@ export type BudgetItemUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   section?: Prisma.BudgetSectionUpdateOneRequiredWithoutItemsNestedInput
   equipment?: Prisma.EquipmentUpdateOneRequiredWithoutBudgetItemsNestedInput
 }
@@ -321,6 +351,8 @@ export type BudgetItemUncheckedUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BudgetItemCreateManyInput = {
@@ -330,6 +362,8 @@ export type BudgetItemCreateManyInput = {
   quantity: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: boolean
+  description?: string | null
 }
 
 export type BudgetItemUpdateManyMutationInput = {
@@ -337,6 +371,8 @@ export type BudgetItemUpdateManyMutationInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BudgetItemUncheckedUpdateManyInput = {
@@ -346,6 +382,8 @@ export type BudgetItemUncheckedUpdateManyInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BudgetItemListRelationFilter = {
@@ -365,6 +403,8 @@ export type BudgetItemCountOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
+  showInBudgetPrint?: Prisma.SortOrder
+  description?: Prisma.SortOrder
 }
 
 export type BudgetItemAvgOrderByAggregateInput = {
@@ -380,6 +420,8 @@ export type BudgetItemMaxOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
+  showInBudgetPrint?: Prisma.SortOrder
+  description?: Prisma.SortOrder
 }
 
 export type BudgetItemMinOrderByAggregateInput = {
@@ -389,6 +431,8 @@ export type BudgetItemMinOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
+  showInBudgetPrint?: Prisma.SortOrder
+  description?: Prisma.SortOrder
 }
 
 export type BudgetItemSumOrderByAggregateInput = {
@@ -481,11 +525,17 @@ export type BudgetItemUncheckedUpdateManyWithoutSectionNestedInput = {
   deleteMany?: Prisma.BudgetItemScalarWhereInput | Prisma.BudgetItemScalarWhereInput[]
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
 export type BudgetItemCreateWithoutEquipmentInput = {
   id?: string
   quantity: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: boolean
+  description?: string | null
   section: Prisma.BudgetSectionCreateNestedOneWithoutItemsInput
 }
 
@@ -495,6 +545,8 @@ export type BudgetItemUncheckedCreateWithoutEquipmentInput = {
   quantity: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: boolean
+  description?: string | null
 }
 
 export type BudgetItemCreateOrConnectWithoutEquipmentInput = {
@@ -533,6 +585,8 @@ export type BudgetItemScalarWhereInput = {
   quantity?: Prisma.IntFilter<"BudgetItem"> | number
   unitPrice?: Prisma.DecimalFilter<"BudgetItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFilter<"BudgetItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFilter<"BudgetItem"> | boolean
+  description?: Prisma.StringNullableFilter<"BudgetItem"> | string | null
 }
 
 export type BudgetItemCreateWithoutSectionInput = {
@@ -540,6 +594,8 @@ export type BudgetItemCreateWithoutSectionInput = {
   quantity: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: boolean
+  description?: string | null
   equipment: Prisma.EquipmentCreateNestedOneWithoutBudgetItemsInput
 }
 
@@ -549,6 +605,8 @@ export type BudgetItemUncheckedCreateWithoutSectionInput = {
   quantity: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: boolean
+  description?: string | null
 }
 
 export type BudgetItemCreateOrConnectWithoutSectionInput = {
@@ -583,6 +641,8 @@ export type BudgetItemCreateManyEquipmentInput = {
   quantity: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: boolean
+  description?: string | null
 }
 
 export type BudgetItemUpdateWithoutEquipmentInput = {
@@ -590,6 +650,8 @@ export type BudgetItemUpdateWithoutEquipmentInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   section?: Prisma.BudgetSectionUpdateOneRequiredWithoutItemsNestedInput
 }
 
@@ -599,6 +661,8 @@ export type BudgetItemUncheckedUpdateWithoutEquipmentInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BudgetItemUncheckedUpdateManyWithoutEquipmentInput = {
@@ -607,6 +671,8 @@ export type BudgetItemUncheckedUpdateManyWithoutEquipmentInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BudgetItemCreateManySectionInput = {
@@ -615,6 +681,8 @@ export type BudgetItemCreateManySectionInput = {
   quantity: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: boolean
+  description?: string | null
 }
 
 export type BudgetItemUpdateWithoutSectionInput = {
@@ -622,6 +690,8 @@ export type BudgetItemUpdateWithoutSectionInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   equipment?: Prisma.EquipmentUpdateOneRequiredWithoutBudgetItemsNestedInput
 }
 
@@ -631,6 +701,8 @@ export type BudgetItemUncheckedUpdateWithoutSectionInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BudgetItemUncheckedUpdateManyWithoutSectionInput = {
@@ -639,6 +711,8 @@ export type BudgetItemUncheckedUpdateManyWithoutSectionInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  showInBudgetPrint?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -650,6 +724,8 @@ export type BudgetItemSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   quantity?: boolean
   unitPrice?: boolean
   subtotal?: boolean
+  showInBudgetPrint?: boolean
+  description?: boolean
   section?: boolean | Prisma.BudgetSectionDefaultArgs<ExtArgs>
   equipment?: boolean | Prisma.EquipmentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["budgetItem"]>
@@ -661,6 +737,8 @@ export type BudgetItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   quantity?: boolean
   unitPrice?: boolean
   subtotal?: boolean
+  showInBudgetPrint?: boolean
+  description?: boolean
   section?: boolean | Prisma.BudgetSectionDefaultArgs<ExtArgs>
   equipment?: boolean | Prisma.EquipmentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["budgetItem"]>
@@ -672,6 +750,8 @@ export type BudgetItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   quantity?: boolean
   unitPrice?: boolean
   subtotal?: boolean
+  showInBudgetPrint?: boolean
+  description?: boolean
   section?: boolean | Prisma.BudgetSectionDefaultArgs<ExtArgs>
   equipment?: boolean | Prisma.EquipmentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["budgetItem"]>
@@ -683,9 +763,11 @@ export type BudgetItemSelectScalar = {
   quantity?: boolean
   unitPrice?: boolean
   subtotal?: boolean
+  showInBudgetPrint?: boolean
+  description?: boolean
 }
 
-export type BudgetItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sectionId" | "equipmentId" | "quantity" | "unitPrice" | "subtotal", ExtArgs["result"]["budgetItem"]>
+export type BudgetItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sectionId" | "equipmentId" | "quantity" | "unitPrice" | "subtotal" | "showInBudgetPrint" | "description", ExtArgs["result"]["budgetItem"]>
 export type BudgetItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   section?: boolean | Prisma.BudgetSectionDefaultArgs<ExtArgs>
   equipment?: boolean | Prisma.EquipmentDefaultArgs<ExtArgs>
@@ -712,6 +794,8 @@ export type $BudgetItemPayload<ExtArgs extends runtime.Types.Extensions.Internal
     quantity: number
     unitPrice: runtime.Decimal
     subtotal: runtime.Decimal
+    showInBudgetPrint: boolean
+    description: string | null
   }, ExtArgs["result"]["budgetItem"]>
   composites: {}
 }
@@ -1143,6 +1227,8 @@ export interface BudgetItemFieldRefs {
   readonly quantity: Prisma.FieldRef<"BudgetItem", 'Int'>
   readonly unitPrice: Prisma.FieldRef<"BudgetItem", 'Decimal'>
   readonly subtotal: Prisma.FieldRef<"BudgetItem", 'Decimal'>
+  readonly showInBudgetPrint: Prisma.FieldRef<"BudgetItem", 'Boolean'>
+  readonly description: Prisma.FieldRef<"BudgetItem", 'String'>
 }
     
 

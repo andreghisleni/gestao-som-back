@@ -505,10 +505,6 @@ export type UserUpdateOneRequiredWithoutBudgetsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBudgetsInput, Prisma.UserUpdateWithoutBudgetsInput>, Prisma.UserUncheckedUpdateWithoutBudgetsInput>
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type NullableBoolFieldUpdateOperationsInput = {
   set?: boolean | null
 }

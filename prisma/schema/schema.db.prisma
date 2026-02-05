@@ -86,5 +86,9 @@ model BudgetItem {
   unitPrice Decimal @map("unit_price") @db.Decimal(10, 2)
   subtotal  Decimal @db.Decimal(10, 2)
 
+  showInBudgetPrint Boolean @default(true) @map("show_in_budget_print")
+
+  description String?
+
   @@map("budget_items")
 }

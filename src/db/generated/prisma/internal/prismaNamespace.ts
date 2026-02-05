@@ -1177,7 +1177,9 @@ export const BudgetItemScalarFieldEnum = {
   equipmentId: 'equipmentId',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
-  subtotal: 'subtotal'
+  subtotal: 'subtotal',
+  showInBudgetPrint: 'showInBudgetPrint',
+  description: 'description'
 } as const
 
 export type BudgetItemScalarFieldEnum = (typeof BudgetItemScalarFieldEnum)[keyof typeof BudgetItemScalarFieldEnum]

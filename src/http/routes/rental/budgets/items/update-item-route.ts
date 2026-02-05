@@ -12,6 +12,7 @@ const updateItemBodySchema = t.Object(
   {
     quantity: t.Optional(t.Number({ minimum: 1 })),
     customUnitPrice: t.Optional(t.Number({ minimum: 0 })),
+    description: t.Optional(t.String()),
   },
   {
     description: 'Schema for updating a budget item',
@@ -67,6 +68,7 @@ export const updateBudgetItemRoute = new Elysia().macro(authMacro).put(
           quantity: newQuantity,
           unitPrice: newUnitPrice,
           subtotal: newSubtotal,
+          description: body.description, // Atualiza descrição se fornecida
         },
       });
 
