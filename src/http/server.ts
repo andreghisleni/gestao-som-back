@@ -6,6 +6,7 @@ import { env } from '~/env';
 import { tracing } from '~/tracing';
 // import { event } from "./routes/event-routes";
 // import { events } from "./routes/events";
+import { publicRoutes } from './routes/public';
 import { rentalRoutes } from './routes/rental';
 
 // import { scoutSessions } from "./routes/scout-sessions";
@@ -53,6 +54,8 @@ const app = new Elysia()
   // .use(scoutSessions)
   // .use(users)
   // .use(event)
+  // Superfície sem sessão: autorizada pelo token do link (./routes/public)
+  .use(publicRoutes)
   .use(rentalRoutes)
   .get('/', () => 'Hello Elysia', {
     detail: {

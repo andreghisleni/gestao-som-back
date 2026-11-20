@@ -32,6 +32,7 @@ export type BudgetAvgAggregateOutputType = {
   laborCost: runtime.Decimal | null
   transportCost: runtime.Decimal | null
   finalValue: runtime.Decimal | null
+  publicViewCount: number | null
 }
 
 export type BudgetSumAggregateOutputType = {
@@ -40,6 +41,7 @@ export type BudgetSumAggregateOutputType = {
   laborCost: runtime.Decimal | null
   transportCost: runtime.Decimal | null
   finalValue: runtime.Decimal | null
+  publicViewCount: number | null
 }
 
 export type BudgetMinAggregateOutputType = {
@@ -55,6 +57,10 @@ export type BudgetMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
+  publicToken: string | null
+  publicTokenAt: Date | null
+  publicTokenRevoked: Date | null
+  publicViewCount: number | null
 }
 
 export type BudgetMaxAggregateOutputType = {
@@ -70,6 +76,10 @@ export type BudgetMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
+  publicToken: string | null
+  publicTokenAt: Date | null
+  publicTokenRevoked: Date | null
+  publicViewCount: number | null
 }
 
 export type BudgetCountAggregateOutputType = {
@@ -85,6 +95,10 @@ export type BudgetCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   userId: number
+  publicToken: number
+  publicTokenAt: number
+  publicTokenRevoked: number
+  publicViewCount: number
   _all: number
 }
 
@@ -95,6 +109,7 @@ export type BudgetAvgAggregateInputType = {
   laborCost?: true
   transportCost?: true
   finalValue?: true
+  publicViewCount?: true
 }
 
 export type BudgetSumAggregateInputType = {
@@ -103,6 +118,7 @@ export type BudgetSumAggregateInputType = {
   laborCost?: true
   transportCost?: true
   finalValue?: true
+  publicViewCount?: true
 }
 
 export type BudgetMinAggregateInputType = {
@@ -118,6 +134,10 @@ export type BudgetMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   userId?: true
+  publicToken?: true
+  publicTokenAt?: true
+  publicTokenRevoked?: true
+  publicViewCount?: true
 }
 
 export type BudgetMaxAggregateInputType = {
@@ -133,6 +153,10 @@ export type BudgetMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   userId?: true
+  publicToken?: true
+  publicTokenAt?: true
+  publicTokenRevoked?: true
+  publicViewCount?: true
 }
 
 export type BudgetCountAggregateInputType = {
@@ -148,6 +172,10 @@ export type BudgetCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   userId?: true
+  publicToken?: true
+  publicTokenAt?: true
+  publicTokenRevoked?: true
+  publicViewCount?: true
   _all?: true
 }
 
@@ -250,6 +278,10 @@ export type BudgetGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   userId: string
+  publicToken: string | null
+  publicTokenAt: Date | null
+  publicTokenRevoked: Date | null
+  publicViewCount: number
   _count: BudgetCountAggregateOutputType | null
   _avg: BudgetAvgAggregateOutputType | null
   _sum: BudgetSumAggregateOutputType | null
@@ -288,8 +320,15 @@ export type BudgetWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Budget"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Budget"> | Date | string
   userId?: Prisma.StringFilter<"Budget"> | string
+  publicToken?: Prisma.StringNullableFilter<"Budget"> | string | null
+  publicTokenAt?: Prisma.DateTimeNullableFilter<"Budget"> | Date | string | null
+  publicTokenRevoked?: Prisma.DateTimeNullableFilter<"Budget"> | Date | string | null
+  publicViewCount?: Prisma.IntFilter<"Budget"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   sections?: Prisma.BudgetSectionListRelationFilter
+  details?: Prisma.XOR<Prisma.EventDetailsNullableScalarRelationFilter, Prisma.EventDetailsWhereInput> | null
+  offerItems?: Prisma.BudgetOfferItemListRelationFilter
+  acceptance?: Prisma.XOR<Prisma.BudgetAcceptanceNullableScalarRelationFilter, Prisma.BudgetAcceptanceWhereInput> | null
 }
 
 export type BudgetOrderByWithRelationInput = {
@@ -305,12 +344,20 @@ export type BudgetOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  publicToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicTokenAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicTokenRevoked?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicViewCount?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   sections?: Prisma.BudgetSectionOrderByRelationAggregateInput
+  details?: Prisma.EventDetailsOrderByWithRelationInput
+  offerItems?: Prisma.BudgetOfferItemOrderByRelationAggregateInput
+  acceptance?: Prisma.BudgetAcceptanceOrderByWithRelationInput
 }
 
 export type BudgetWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  publicToken?: string
   AND?: Prisma.BudgetWhereInput | Prisma.BudgetWhereInput[]
   OR?: Prisma.BudgetWhereInput[]
   NOT?: Prisma.BudgetWhereInput | Prisma.BudgetWhereInput[]
@@ -325,9 +372,15 @@ export type BudgetWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Budget"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Budget"> | Date | string
   userId?: Prisma.StringFilter<"Budget"> | string
+  publicTokenAt?: Prisma.DateTimeNullableFilter<"Budget"> | Date | string | null
+  publicTokenRevoked?: Prisma.DateTimeNullableFilter<"Budget"> | Date | string | null
+  publicViewCount?: Prisma.IntFilter<"Budget"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   sections?: Prisma.BudgetSectionListRelationFilter
-}, "id">
+  details?: Prisma.XOR<Prisma.EventDetailsNullableScalarRelationFilter, Prisma.EventDetailsWhereInput> | null
+  offerItems?: Prisma.BudgetOfferItemListRelationFilter
+  acceptance?: Prisma.XOR<Prisma.BudgetAcceptanceNullableScalarRelationFilter, Prisma.BudgetAcceptanceWhereInput> | null
+}, "id" | "publicToken">
 
 export type BudgetOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -342,6 +395,10 @@ export type BudgetOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  publicToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicTokenAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicTokenRevoked?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicViewCount?: Prisma.SortOrder
   _count?: Prisma.BudgetCountOrderByAggregateInput
   _avg?: Prisma.BudgetAvgOrderByAggregateInput
   _max?: Prisma.BudgetMaxOrderByAggregateInput
@@ -365,6 +422,10 @@ export type BudgetScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Budget"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Budget"> | Date | string
   userId?: Prisma.StringWithAggregatesFilter<"Budget"> | string
+  publicToken?: Prisma.StringNullableWithAggregatesFilter<"Budget"> | string | null
+  publicTokenAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Budget"> | Date | string | null
+  publicTokenRevoked?: Prisma.DateTimeNullableWithAggregatesFilter<"Budget"> | Date | string | null
+  publicViewCount?: Prisma.IntWithAggregatesFilter<"Budget"> | number
 }
 
 export type BudgetCreateInput = {
@@ -379,8 +440,15 @@ export type BudgetCreateInput = {
   finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
   user: Prisma.UserCreateNestedOneWithoutBudgetsInput
   sections?: Prisma.BudgetSectionCreateNestedManyWithoutBudgetInput
+  details?: Prisma.EventDetailsCreateNestedOneWithoutBudgetInput
+  offerItems?: Prisma.BudgetOfferItemCreateNestedManyWithoutBudgetInput
+  acceptance?: Prisma.BudgetAcceptanceCreateNestedOneWithoutBudgetInput
 }
 
 export type BudgetUncheckedCreateInput = {
@@ -396,7 +464,14 @@ export type BudgetUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
   sections?: Prisma.BudgetSectionUncheckedCreateNestedManyWithoutBudgetInput
+  details?: Prisma.EventDetailsUncheckedCreateNestedOneWithoutBudgetInput
+  offerItems?: Prisma.BudgetOfferItemUncheckedCreateNestedManyWithoutBudgetInput
+  acceptance?: Prisma.BudgetAcceptanceUncheckedCreateNestedOneWithoutBudgetInput
 }
 
 export type BudgetUpdateInput = {
@@ -411,8 +486,15 @@ export type BudgetUpdateInput = {
   finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
   user?: Prisma.UserUpdateOneRequiredWithoutBudgetsNestedInput
   sections?: Prisma.BudgetSectionUpdateManyWithoutBudgetNestedInput
+  details?: Prisma.EventDetailsUpdateOneWithoutBudgetNestedInput
+  offerItems?: Prisma.BudgetOfferItemUpdateManyWithoutBudgetNestedInput
+  acceptance?: Prisma.BudgetAcceptanceUpdateOneWithoutBudgetNestedInput
 }
 
 export type BudgetUncheckedUpdateInput = {
@@ -428,7 +510,14 @@ export type BudgetUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
   sections?: Prisma.BudgetSectionUncheckedUpdateManyWithoutBudgetNestedInput
+  details?: Prisma.EventDetailsUncheckedUpdateOneWithoutBudgetNestedInput
+  offerItems?: Prisma.BudgetOfferItemUncheckedUpdateManyWithoutBudgetNestedInput
+  acceptance?: Prisma.BudgetAcceptanceUncheckedUpdateOneWithoutBudgetNestedInput
 }
 
 export type BudgetCreateManyInput = {
@@ -444,6 +533,10 @@ export type BudgetCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
 }
 
 export type BudgetUpdateManyMutationInput = {
@@ -458,6 +551,10 @@ export type BudgetUpdateManyMutationInput = {
   finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type BudgetUncheckedUpdateManyInput = {
@@ -473,6 +570,10 @@ export type BudgetUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type BudgetCountOrderByAggregateInput = {
@@ -488,6 +589,10 @@ export type BudgetCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  publicToken?: Prisma.SortOrder
+  publicTokenAt?: Prisma.SortOrder
+  publicTokenRevoked?: Prisma.SortOrder
+  publicViewCount?: Prisma.SortOrder
 }
 
 export type BudgetAvgOrderByAggregateInput = {
@@ -496,6 +601,7 @@ export type BudgetAvgOrderByAggregateInput = {
   laborCost?: Prisma.SortOrder
   transportCost?: Prisma.SortOrder
   finalValue?: Prisma.SortOrder
+  publicViewCount?: Prisma.SortOrder
 }
 
 export type BudgetMaxOrderByAggregateInput = {
@@ -511,6 +617,10 @@ export type BudgetMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  publicToken?: Prisma.SortOrder
+  publicTokenAt?: Prisma.SortOrder
+  publicTokenRevoked?: Prisma.SortOrder
+  publicViewCount?: Prisma.SortOrder
 }
 
 export type BudgetMinOrderByAggregateInput = {
@@ -526,6 +636,10 @@ export type BudgetMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  publicToken?: Prisma.SortOrder
+  publicTokenAt?: Prisma.SortOrder
+  publicTokenRevoked?: Prisma.SortOrder
+  publicViewCount?: Prisma.SortOrder
 }
 
 export type BudgetSumOrderByAggregateInput = {
@@ -534,6 +648,7 @@ export type BudgetSumOrderByAggregateInput = {
   laborCost?: Prisma.SortOrder
   transportCost?: Prisma.SortOrder
   finalValue?: Prisma.SortOrder
+  publicViewCount?: Prisma.SortOrder
 }
 
 export type BudgetScalarRelationFilter = {
@@ -551,6 +666,10 @@ export type BudgetOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type BudgetCreateNestedOneWithoutSectionsInput = {
   create?: Prisma.XOR<Prisma.BudgetCreateWithoutSectionsInput, Prisma.BudgetUncheckedCreateWithoutSectionsInput>
   connectOrCreate?: Prisma.BudgetCreateOrConnectWithoutSectionsInput
@@ -563,6 +682,48 @@ export type BudgetUpdateOneRequiredWithoutSectionsNestedInput = {
   upsert?: Prisma.BudgetUpsertWithoutSectionsInput
   connect?: Prisma.BudgetWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.BudgetUpdateToOneWithWhereWithoutSectionsInput, Prisma.BudgetUpdateWithoutSectionsInput>, Prisma.BudgetUncheckedUpdateWithoutSectionsInput>
+}
+
+export type BudgetCreateNestedOneWithoutOfferItemsInput = {
+  create?: Prisma.XOR<Prisma.BudgetCreateWithoutOfferItemsInput, Prisma.BudgetUncheckedCreateWithoutOfferItemsInput>
+  connectOrCreate?: Prisma.BudgetCreateOrConnectWithoutOfferItemsInput
+  connect?: Prisma.BudgetWhereUniqueInput
+}
+
+export type BudgetUpdateOneRequiredWithoutOfferItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.BudgetCreateWithoutOfferItemsInput, Prisma.BudgetUncheckedCreateWithoutOfferItemsInput>
+  connectOrCreate?: Prisma.BudgetCreateOrConnectWithoutOfferItemsInput
+  upsert?: Prisma.BudgetUpsertWithoutOfferItemsInput
+  connect?: Prisma.BudgetWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BudgetUpdateToOneWithWhereWithoutOfferItemsInput, Prisma.BudgetUpdateWithoutOfferItemsInput>, Prisma.BudgetUncheckedUpdateWithoutOfferItemsInput>
+}
+
+export type BudgetCreateNestedOneWithoutDetailsInput = {
+  create?: Prisma.XOR<Prisma.BudgetCreateWithoutDetailsInput, Prisma.BudgetUncheckedCreateWithoutDetailsInput>
+  connectOrCreate?: Prisma.BudgetCreateOrConnectWithoutDetailsInput
+  connect?: Prisma.BudgetWhereUniqueInput
+}
+
+export type BudgetUpdateOneRequiredWithoutDetailsNestedInput = {
+  create?: Prisma.XOR<Prisma.BudgetCreateWithoutDetailsInput, Prisma.BudgetUncheckedCreateWithoutDetailsInput>
+  connectOrCreate?: Prisma.BudgetCreateOrConnectWithoutDetailsInput
+  upsert?: Prisma.BudgetUpsertWithoutDetailsInput
+  connect?: Prisma.BudgetWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BudgetUpdateToOneWithWhereWithoutDetailsInput, Prisma.BudgetUpdateWithoutDetailsInput>, Prisma.BudgetUncheckedUpdateWithoutDetailsInput>
+}
+
+export type BudgetCreateNestedOneWithoutAcceptanceInput = {
+  create?: Prisma.XOR<Prisma.BudgetCreateWithoutAcceptanceInput, Prisma.BudgetUncheckedCreateWithoutAcceptanceInput>
+  connectOrCreate?: Prisma.BudgetCreateOrConnectWithoutAcceptanceInput
+  connect?: Prisma.BudgetWhereUniqueInput
+}
+
+export type BudgetUpdateOneRequiredWithoutAcceptanceNestedInput = {
+  create?: Prisma.XOR<Prisma.BudgetCreateWithoutAcceptanceInput, Prisma.BudgetUncheckedCreateWithoutAcceptanceInput>
+  connectOrCreate?: Prisma.BudgetCreateOrConnectWithoutAcceptanceInput
+  upsert?: Prisma.BudgetUpsertWithoutAcceptanceInput
+  connect?: Prisma.BudgetWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BudgetUpdateToOneWithWhereWithoutAcceptanceInput, Prisma.BudgetUpdateWithoutAcceptanceInput>, Prisma.BudgetUncheckedUpdateWithoutAcceptanceInput>
 }
 
 export type BudgetCreateNestedManyWithoutUserInput = {
@@ -619,7 +780,14 @@ export type BudgetCreateWithoutSectionsInput = {
   finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
   user: Prisma.UserCreateNestedOneWithoutBudgetsInput
+  details?: Prisma.EventDetailsCreateNestedOneWithoutBudgetInput
+  offerItems?: Prisma.BudgetOfferItemCreateNestedManyWithoutBudgetInput
+  acceptance?: Prisma.BudgetAcceptanceCreateNestedOneWithoutBudgetInput
 }
 
 export type BudgetUncheckedCreateWithoutSectionsInput = {
@@ -635,6 +803,13 @@ export type BudgetUncheckedCreateWithoutSectionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
+  details?: Prisma.EventDetailsUncheckedCreateNestedOneWithoutBudgetInput
+  offerItems?: Prisma.BudgetOfferItemUncheckedCreateNestedManyWithoutBudgetInput
+  acceptance?: Prisma.BudgetAcceptanceUncheckedCreateNestedOneWithoutBudgetInput
 }
 
 export type BudgetCreateOrConnectWithoutSectionsInput = {
@@ -665,7 +840,14 @@ export type BudgetUpdateWithoutSectionsInput = {
   finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
   user?: Prisma.UserUpdateOneRequiredWithoutBudgetsNestedInput
+  details?: Prisma.EventDetailsUpdateOneWithoutBudgetNestedInput
+  offerItems?: Prisma.BudgetOfferItemUpdateManyWithoutBudgetNestedInput
+  acceptance?: Prisma.BudgetAcceptanceUpdateOneWithoutBudgetNestedInput
 }
 
 export type BudgetUncheckedUpdateWithoutSectionsInput = {
@@ -681,6 +863,325 @@ export type BudgetUncheckedUpdateWithoutSectionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  details?: Prisma.EventDetailsUncheckedUpdateOneWithoutBudgetNestedInput
+  offerItems?: Prisma.BudgetOfferItemUncheckedUpdateManyWithoutBudgetNestedInput
+  acceptance?: Prisma.BudgetAcceptanceUncheckedUpdateOneWithoutBudgetNestedInput
+}
+
+export type BudgetCreateWithoutOfferItemsInput = {
+  id?: string
+  clientName: string
+  eventDate: Date | string
+  status?: string
+  totalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
+  user: Prisma.UserCreateNestedOneWithoutBudgetsInput
+  sections?: Prisma.BudgetSectionCreateNestedManyWithoutBudgetInput
+  details?: Prisma.EventDetailsCreateNestedOneWithoutBudgetInput
+  acceptance?: Prisma.BudgetAcceptanceCreateNestedOneWithoutBudgetInput
+}
+
+export type BudgetUncheckedCreateWithoutOfferItemsInput = {
+  id?: string
+  clientName: string
+  eventDate: Date | string
+  status?: string
+  totalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
+  sections?: Prisma.BudgetSectionUncheckedCreateNestedManyWithoutBudgetInput
+  details?: Prisma.EventDetailsUncheckedCreateNestedOneWithoutBudgetInput
+  acceptance?: Prisma.BudgetAcceptanceUncheckedCreateNestedOneWithoutBudgetInput
+}
+
+export type BudgetCreateOrConnectWithoutOfferItemsInput = {
+  where: Prisma.BudgetWhereUniqueInput
+  create: Prisma.XOR<Prisma.BudgetCreateWithoutOfferItemsInput, Prisma.BudgetUncheckedCreateWithoutOfferItemsInput>
+}
+
+export type BudgetUpsertWithoutOfferItemsInput = {
+  update: Prisma.XOR<Prisma.BudgetUpdateWithoutOfferItemsInput, Prisma.BudgetUncheckedUpdateWithoutOfferItemsInput>
+  create: Prisma.XOR<Prisma.BudgetCreateWithoutOfferItemsInput, Prisma.BudgetUncheckedCreateWithoutOfferItemsInput>
+  where?: Prisma.BudgetWhereInput
+}
+
+export type BudgetUpdateToOneWithWhereWithoutOfferItemsInput = {
+  where?: Prisma.BudgetWhereInput
+  data: Prisma.XOR<Prisma.BudgetUpdateWithoutOfferItemsInput, Prisma.BudgetUncheckedUpdateWithoutOfferItemsInput>
+}
+
+export type BudgetUpdateWithoutOfferItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientName?: Prisma.StringFieldUpdateOperationsInput | string
+  eventDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  totalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  user?: Prisma.UserUpdateOneRequiredWithoutBudgetsNestedInput
+  sections?: Prisma.BudgetSectionUpdateManyWithoutBudgetNestedInput
+  details?: Prisma.EventDetailsUpdateOneWithoutBudgetNestedInput
+  acceptance?: Prisma.BudgetAcceptanceUpdateOneWithoutBudgetNestedInput
+}
+
+export type BudgetUncheckedUpdateWithoutOfferItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientName?: Prisma.StringFieldUpdateOperationsInput | string
+  eventDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  totalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  sections?: Prisma.BudgetSectionUncheckedUpdateManyWithoutBudgetNestedInput
+  details?: Prisma.EventDetailsUncheckedUpdateOneWithoutBudgetNestedInput
+  acceptance?: Prisma.BudgetAcceptanceUncheckedUpdateOneWithoutBudgetNestedInput
+}
+
+export type BudgetCreateWithoutDetailsInput = {
+  id?: string
+  clientName: string
+  eventDate: Date | string
+  status?: string
+  totalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
+  user: Prisma.UserCreateNestedOneWithoutBudgetsInput
+  sections?: Prisma.BudgetSectionCreateNestedManyWithoutBudgetInput
+  offerItems?: Prisma.BudgetOfferItemCreateNestedManyWithoutBudgetInput
+  acceptance?: Prisma.BudgetAcceptanceCreateNestedOneWithoutBudgetInput
+}
+
+export type BudgetUncheckedCreateWithoutDetailsInput = {
+  id?: string
+  clientName: string
+  eventDate: Date | string
+  status?: string
+  totalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
+  sections?: Prisma.BudgetSectionUncheckedCreateNestedManyWithoutBudgetInput
+  offerItems?: Prisma.BudgetOfferItemUncheckedCreateNestedManyWithoutBudgetInput
+  acceptance?: Prisma.BudgetAcceptanceUncheckedCreateNestedOneWithoutBudgetInput
+}
+
+export type BudgetCreateOrConnectWithoutDetailsInput = {
+  where: Prisma.BudgetWhereUniqueInput
+  create: Prisma.XOR<Prisma.BudgetCreateWithoutDetailsInput, Prisma.BudgetUncheckedCreateWithoutDetailsInput>
+}
+
+export type BudgetUpsertWithoutDetailsInput = {
+  update: Prisma.XOR<Prisma.BudgetUpdateWithoutDetailsInput, Prisma.BudgetUncheckedUpdateWithoutDetailsInput>
+  create: Prisma.XOR<Prisma.BudgetCreateWithoutDetailsInput, Prisma.BudgetUncheckedCreateWithoutDetailsInput>
+  where?: Prisma.BudgetWhereInput
+}
+
+export type BudgetUpdateToOneWithWhereWithoutDetailsInput = {
+  where?: Prisma.BudgetWhereInput
+  data: Prisma.XOR<Prisma.BudgetUpdateWithoutDetailsInput, Prisma.BudgetUncheckedUpdateWithoutDetailsInput>
+}
+
+export type BudgetUpdateWithoutDetailsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientName?: Prisma.StringFieldUpdateOperationsInput | string
+  eventDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  totalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  user?: Prisma.UserUpdateOneRequiredWithoutBudgetsNestedInput
+  sections?: Prisma.BudgetSectionUpdateManyWithoutBudgetNestedInput
+  offerItems?: Prisma.BudgetOfferItemUpdateManyWithoutBudgetNestedInput
+  acceptance?: Prisma.BudgetAcceptanceUpdateOneWithoutBudgetNestedInput
+}
+
+export type BudgetUncheckedUpdateWithoutDetailsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientName?: Prisma.StringFieldUpdateOperationsInput | string
+  eventDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  totalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  sections?: Prisma.BudgetSectionUncheckedUpdateManyWithoutBudgetNestedInput
+  offerItems?: Prisma.BudgetOfferItemUncheckedUpdateManyWithoutBudgetNestedInput
+  acceptance?: Prisma.BudgetAcceptanceUncheckedUpdateOneWithoutBudgetNestedInput
+}
+
+export type BudgetCreateWithoutAcceptanceInput = {
+  id?: string
+  clientName: string
+  eventDate: Date | string
+  status?: string
+  totalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
+  user: Prisma.UserCreateNestedOneWithoutBudgetsInput
+  sections?: Prisma.BudgetSectionCreateNestedManyWithoutBudgetInput
+  details?: Prisma.EventDetailsCreateNestedOneWithoutBudgetInput
+  offerItems?: Prisma.BudgetOfferItemCreateNestedManyWithoutBudgetInput
+}
+
+export type BudgetUncheckedCreateWithoutAcceptanceInput = {
+  id?: string
+  clientName: string
+  eventDate: Date | string
+  status?: string
+  totalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
+  sections?: Prisma.BudgetSectionUncheckedCreateNestedManyWithoutBudgetInput
+  details?: Prisma.EventDetailsUncheckedCreateNestedOneWithoutBudgetInput
+  offerItems?: Prisma.BudgetOfferItemUncheckedCreateNestedManyWithoutBudgetInput
+}
+
+export type BudgetCreateOrConnectWithoutAcceptanceInput = {
+  where: Prisma.BudgetWhereUniqueInput
+  create: Prisma.XOR<Prisma.BudgetCreateWithoutAcceptanceInput, Prisma.BudgetUncheckedCreateWithoutAcceptanceInput>
+}
+
+export type BudgetUpsertWithoutAcceptanceInput = {
+  update: Prisma.XOR<Prisma.BudgetUpdateWithoutAcceptanceInput, Prisma.BudgetUncheckedUpdateWithoutAcceptanceInput>
+  create: Prisma.XOR<Prisma.BudgetCreateWithoutAcceptanceInput, Prisma.BudgetUncheckedCreateWithoutAcceptanceInput>
+  where?: Prisma.BudgetWhereInput
+}
+
+export type BudgetUpdateToOneWithWhereWithoutAcceptanceInput = {
+  where?: Prisma.BudgetWhereInput
+  data: Prisma.XOR<Prisma.BudgetUpdateWithoutAcceptanceInput, Prisma.BudgetUncheckedUpdateWithoutAcceptanceInput>
+}
+
+export type BudgetUpdateWithoutAcceptanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientName?: Prisma.StringFieldUpdateOperationsInput | string
+  eventDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  totalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  user?: Prisma.UserUpdateOneRequiredWithoutBudgetsNestedInput
+  sections?: Prisma.BudgetSectionUpdateManyWithoutBudgetNestedInput
+  details?: Prisma.EventDetailsUpdateOneWithoutBudgetNestedInput
+  offerItems?: Prisma.BudgetOfferItemUpdateManyWithoutBudgetNestedInput
+}
+
+export type BudgetUncheckedUpdateWithoutAcceptanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientName?: Prisma.StringFieldUpdateOperationsInput | string
+  eventDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  totalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  laborCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  transportCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  sections?: Prisma.BudgetSectionUncheckedUpdateManyWithoutBudgetNestedInput
+  details?: Prisma.EventDetailsUncheckedUpdateOneWithoutBudgetNestedInput
+  offerItems?: Prisma.BudgetOfferItemUncheckedUpdateManyWithoutBudgetNestedInput
 }
 
 export type BudgetCreateWithoutUserInput = {
@@ -695,7 +1196,14 @@ export type BudgetCreateWithoutUserInput = {
   finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
   sections?: Prisma.BudgetSectionCreateNestedManyWithoutBudgetInput
+  details?: Prisma.EventDetailsCreateNestedOneWithoutBudgetInput
+  offerItems?: Prisma.BudgetOfferItemCreateNestedManyWithoutBudgetInput
+  acceptance?: Prisma.BudgetAcceptanceCreateNestedOneWithoutBudgetInput
 }
 
 export type BudgetUncheckedCreateWithoutUserInput = {
@@ -710,7 +1218,14 @@ export type BudgetUncheckedCreateWithoutUserInput = {
   finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
   sections?: Prisma.BudgetSectionUncheckedCreateNestedManyWithoutBudgetInput
+  details?: Prisma.EventDetailsUncheckedCreateNestedOneWithoutBudgetInput
+  offerItems?: Prisma.BudgetOfferItemUncheckedCreateNestedManyWithoutBudgetInput
+  acceptance?: Prisma.BudgetAcceptanceUncheckedCreateNestedOneWithoutBudgetInput
 }
 
 export type BudgetCreateOrConnectWithoutUserInput = {
@@ -755,6 +1270,10 @@ export type BudgetScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Budget"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Budget"> | Date | string
   userId?: Prisma.StringFilter<"Budget"> | string
+  publicToken?: Prisma.StringNullableFilter<"Budget"> | string | null
+  publicTokenAt?: Prisma.DateTimeNullableFilter<"Budget"> | Date | string | null
+  publicTokenRevoked?: Prisma.DateTimeNullableFilter<"Budget"> | Date | string | null
+  publicViewCount?: Prisma.IntFilter<"Budget"> | number
 }
 
 export type BudgetCreateManyUserInput = {
@@ -769,6 +1288,10 @@ export type BudgetCreateManyUserInput = {
   finalValue?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  publicToken?: string | null
+  publicTokenAt?: Date | string | null
+  publicTokenRevoked?: Date | string | null
+  publicViewCount?: number
 }
 
 export type BudgetUpdateWithoutUserInput = {
@@ -783,7 +1306,14 @@ export type BudgetUpdateWithoutUserInput = {
   finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
   sections?: Prisma.BudgetSectionUpdateManyWithoutBudgetNestedInput
+  details?: Prisma.EventDetailsUpdateOneWithoutBudgetNestedInput
+  offerItems?: Prisma.BudgetOfferItemUpdateManyWithoutBudgetNestedInput
+  acceptance?: Prisma.BudgetAcceptanceUpdateOneWithoutBudgetNestedInput
 }
 
 export type BudgetUncheckedUpdateWithoutUserInput = {
@@ -798,7 +1328,14 @@ export type BudgetUncheckedUpdateWithoutUserInput = {
   finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
   sections?: Prisma.BudgetSectionUncheckedUpdateManyWithoutBudgetNestedInput
+  details?: Prisma.EventDetailsUncheckedUpdateOneWithoutBudgetNestedInput
+  offerItems?: Prisma.BudgetOfferItemUncheckedUpdateManyWithoutBudgetNestedInput
+  acceptance?: Prisma.BudgetAcceptanceUncheckedUpdateOneWithoutBudgetNestedInput
 }
 
 export type BudgetUncheckedUpdateManyWithoutUserInput = {
@@ -813,6 +1350,10 @@ export type BudgetUncheckedUpdateManyWithoutUserInput = {
   finalValue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publicToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicTokenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicTokenRevoked?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publicViewCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -822,10 +1363,12 @@ export type BudgetUncheckedUpdateManyWithoutUserInput = {
 
 export type BudgetCountOutputType = {
   sections: number
+  offerItems: number
 }
 
 export type BudgetCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sections?: boolean | BudgetCountOutputTypeCountSectionsArgs
+  offerItems?: boolean | BudgetCountOutputTypeCountOfferItemsArgs
 }
 
 /**
@@ -845,6 +1388,13 @@ export type BudgetCountOutputTypeCountSectionsArgs<ExtArgs extends runtime.Types
   where?: Prisma.BudgetSectionWhereInput
 }
 
+/**
+ * BudgetCountOutputType without action
+ */
+export type BudgetCountOutputTypeCountOfferItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BudgetOfferItemWhereInput
+}
+
 
 export type BudgetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -859,8 +1409,15 @@ export type BudgetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
+  publicToken?: boolean
+  publicTokenAt?: boolean
+  publicTokenRevoked?: boolean
+  publicViewCount?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   sections?: boolean | Prisma.Budget$sectionsArgs<ExtArgs>
+  details?: boolean | Prisma.Budget$detailsArgs<ExtArgs>
+  offerItems?: boolean | Prisma.Budget$offerItemsArgs<ExtArgs>
+  acceptance?: boolean | Prisma.Budget$acceptanceArgs<ExtArgs>
   _count?: boolean | Prisma.BudgetCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["budget"]>
 
@@ -877,6 +1434,10 @@ export type BudgetSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
+  publicToken?: boolean
+  publicTokenAt?: boolean
+  publicTokenRevoked?: boolean
+  publicViewCount?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["budget"]>
 
@@ -893,6 +1454,10 @@ export type BudgetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
+  publicToken?: boolean
+  publicTokenAt?: boolean
+  publicTokenRevoked?: boolean
+  publicViewCount?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["budget"]>
 
@@ -909,12 +1474,19 @@ export type BudgetSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
+  publicToken?: boolean
+  publicTokenAt?: boolean
+  publicTokenRevoked?: boolean
+  publicViewCount?: boolean
 }
 
-export type BudgetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "clientName" | "eventDate" | "status" | "totalValue" | "discount" | "laborCost" | "transportCost" | "finalValue" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["budget"]>
+export type BudgetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "clientName" | "eventDate" | "status" | "totalValue" | "discount" | "laborCost" | "transportCost" | "finalValue" | "createdAt" | "updatedAt" | "userId" | "publicToken" | "publicTokenAt" | "publicTokenRevoked" | "publicViewCount", ExtArgs["result"]["budget"]>
 export type BudgetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   sections?: boolean | Prisma.Budget$sectionsArgs<ExtArgs>
+  details?: boolean | Prisma.Budget$detailsArgs<ExtArgs>
+  offerItems?: boolean | Prisma.Budget$offerItemsArgs<ExtArgs>
+  acceptance?: boolean | Prisma.Budget$acceptanceArgs<ExtArgs>
   _count?: boolean | Prisma.BudgetCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BudgetIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -929,6 +1501,9 @@ export type $BudgetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     sections: Prisma.$BudgetSectionPayload<ExtArgs>[]
+    details: Prisma.$EventDetailsPayload<ExtArgs> | null
+    offerItems: Prisma.$BudgetOfferItemPayload<ExtArgs>[]
+    acceptance: Prisma.$BudgetAcceptancePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -943,6 +1518,10 @@ export type $BudgetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     createdAt: Date
     updatedAt: Date
     userId: string
+    publicToken: string | null
+    publicTokenAt: Date | null
+    publicTokenRevoked: Date | null
+    publicViewCount: number
   }, ExtArgs["result"]["budget"]>
   composites: {}
 }
@@ -1339,6 +1918,9 @@ export interface Prisma__BudgetClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   sections<T extends Prisma.Budget$sectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Budget$sectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BudgetSectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  details<T extends Prisma.Budget$detailsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Budget$detailsArgs<ExtArgs>>): Prisma.Prisma__EventDetailsClient<runtime.Types.Result.GetResult<Prisma.$EventDetailsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  offerItems<T extends Prisma.Budget$offerItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Budget$offerItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BudgetOfferItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  acceptance<T extends Prisma.Budget$acceptanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Budget$acceptanceArgs<ExtArgs>>): Prisma.Prisma__BudgetAcceptanceClient<runtime.Types.Result.GetResult<Prisma.$BudgetAcceptancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1380,6 +1962,10 @@ export interface BudgetFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Budget", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Budget", 'DateTime'>
   readonly userId: Prisma.FieldRef<"Budget", 'String'>
+  readonly publicToken: Prisma.FieldRef<"Budget", 'String'>
+  readonly publicTokenAt: Prisma.FieldRef<"Budget", 'DateTime'>
+  readonly publicTokenRevoked: Prisma.FieldRef<"Budget", 'DateTime'>
+  readonly publicViewCount: Prisma.FieldRef<"Budget", 'Int'>
 }
     
 
@@ -1797,6 +2383,68 @@ export type Budget$sectionsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.BudgetSectionScalarFieldEnum | Prisma.BudgetSectionScalarFieldEnum[]
+}
+
+/**
+ * Budget.details
+ */
+export type Budget$detailsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EventDetails
+   */
+  select?: Prisma.EventDetailsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EventDetails
+   */
+  omit?: Prisma.EventDetailsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EventDetailsInclude<ExtArgs> | null
+  where?: Prisma.EventDetailsWhereInput
+}
+
+/**
+ * Budget.offerItems
+ */
+export type Budget$offerItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BudgetOfferItem
+   */
+  select?: Prisma.BudgetOfferItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BudgetOfferItem
+   */
+  omit?: Prisma.BudgetOfferItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BudgetOfferItemInclude<ExtArgs> | null
+  where?: Prisma.BudgetOfferItemWhereInput
+  orderBy?: Prisma.BudgetOfferItemOrderByWithRelationInput | Prisma.BudgetOfferItemOrderByWithRelationInput[]
+  cursor?: Prisma.BudgetOfferItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BudgetOfferItemScalarFieldEnum | Prisma.BudgetOfferItemScalarFieldEnum[]
+}
+
+/**
+ * Budget.acceptance
+ */
+export type Budget$acceptanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BudgetAcceptance
+   */
+  select?: Prisma.BudgetAcceptanceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BudgetAcceptance
+   */
+  omit?: Prisma.BudgetAcceptanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BudgetAcceptanceInclude<ExtArgs> | null
+  where?: Prisma.BudgetAcceptanceWhereInput
 }
 
 /**

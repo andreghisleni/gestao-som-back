@@ -56,6 +56,9 @@ export const ModelName = {
   Budget: 'Budget',
   BudgetSection: 'BudgetSection',
   BudgetItem: 'BudgetItem',
+  BudgetOfferItem: 'BudgetOfferItem',
+  EventDetails: 'EventDetails',
+  BudgetAcceptance: 'BudgetAcceptance',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
@@ -117,7 +120,11 @@ export const BudgetScalarFieldEnum = {
   finalValue: 'finalValue',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  userId: 'userId'
+  userId: 'userId',
+  publicToken: 'publicToken',
+  publicTokenAt: 'publicTokenAt',
+  publicTokenRevoked: 'publicTokenRevoked',
+  publicViewCount: 'publicViewCount'
 } as const
 
 export type BudgetScalarFieldEnum = (typeof BudgetScalarFieldEnum)[keyof typeof BudgetScalarFieldEnum]
@@ -144,6 +151,79 @@ export const BudgetItemScalarFieldEnum = {
 } as const
 
 export type BudgetItemScalarFieldEnum = (typeof BudgetItemScalarFieldEnum)[keyof typeof BudgetItemScalarFieldEnum]
+
+
+export const BudgetOfferItemScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  detail: 'detail',
+  source: 'source',
+  order: 'order',
+  budgetId: 'budgetId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BudgetOfferItemScalarFieldEnum = (typeof BudgetOfferItemScalarFieldEnum)[keyof typeof BudgetOfferItemScalarFieldEnum]
+
+
+export const EventDetailsScalarFieldEnum = {
+  id: 'id',
+  budgetId: 'budgetId',
+  contractorType: 'contractorType',
+  contractorName: 'contractorName',
+  tradeName: 'tradeName',
+  document: 'document',
+  email: 'email',
+  phone: 'phone',
+  venueName: 'venueName',
+  zipCode: 'zipCode',
+  street: 'street',
+  streetNumber: 'streetNumber',
+  district: 'district',
+  city: 'city',
+  state: 'state',
+  complement: 'complement',
+  reference: 'reference',
+  accessNotes: 'accessNotes',
+  powerSupply: 'powerSupply',
+  venueSize: 'venueSize',
+  internetAvailable: 'internetAvailable',
+  internetDetail: 'internetDetail',
+  setupTime: 'setupTime',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  endsNextDay: 'endsNextDay',
+  pickupTime: 'pickupTime',
+  startsFlexibility: 'startsFlexibility',
+  onSiteContactName: 'onSiteContactName',
+  onSiteContactPhone: 'onSiteContactPhone',
+  eventType: 'eventType',
+  guestCount: 'guestCount',
+  musicStyles: 'musicStyles',
+  musicStyleOther: 'musicStyleOther',
+  requestedExtras: 'requestedExtras',
+  notes: 'notes',
+  stepSeen: 'stepSeen',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventDetailsScalarFieldEnum = (typeof EventDetailsScalarFieldEnum)[keyof typeof EventDetailsScalarFieldEnum]
+
+
+export const BudgetAcceptanceScalarFieldEnum = {
+  id: 'id',
+  acceptedName: 'acceptedName',
+  acceptedValue: 'acceptedValue',
+  acceptedAt: 'acceptedAt',
+  acceptedIp: 'acceptedIp',
+  userAgent: 'userAgent',
+  budgetId: 'budgetId'
+} as const
+
+export type BudgetAcceptanceScalarFieldEnum = (typeof BudgetAcceptanceScalarFieldEnum)[keyof typeof BudgetAcceptanceScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {

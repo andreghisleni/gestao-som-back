@@ -5,6 +5,9 @@ const schema = z.object({
   DATABASE_URL: z.string().min(5).max(100),
   OTEL_TRACE_EXPORTER_URL: z.string(),
   BETTER_AUTH_URL: z.string(),
+  // Origem usada para montar o link público (rota /p/:token) dos orçamentos.
+  // Default igual ao trustedOrigins do better-auth para não quebrar o dev.
+  PUBLIC_APP_URL: z.string().default('http://localhost:5173'),
 });
 // Faz o "parse" das variáveis de ambiente (process.env) usando o schema definido
 const parsedEnv = schema.safeParse(process.env);

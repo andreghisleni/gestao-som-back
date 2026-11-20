@@ -58,6 +58,17 @@ model Budget {
 
   sections BudgetSection[]
 
+  // --- Página pública de coleta de dados do evento ---
+  // token nullable = link ainda não gerado
+  publicToken        String?   @unique @map("public_token")
+  publicTokenAt      DateTime? @map("public_token_at")
+  publicTokenRevoked DateTime? @map("public_token_revoked")
+  publicViewCount    Int       @default(0) @map("public_view_count")
+
+  details    EventDetails?
+  offerItems BudgetOfferItem[]
+  acceptance BudgetAcceptance?
+
   @@map("budgets")
 }
 
@@ -91,4 +102,109 @@ model BudgetItem {
   description String?
 
   @@map("budget_items")
+}
+
+/// Linhas exibidas na página pública como "o que está incluso".
+/// Editável internamente. NÃO participa do cálculo de preço e não
+/// expõe equipamentos, quantidade ou valores ao cliente.
+model BudgetOfferItem {
+  id     String  @id @default(uuid())
+  name   String // Ex: "Sistema de som"
+  detail String? // Ex: "PA + subgrave para até 200 pessoas"
+
+  // AUTO = gerado a partir das seções do orçamento, MANUAL = escrita pelo usuário
+  source String @default("MANUAL")
+
+  order Int @default(0)
+
+  budgetId String @map("budget_id")
+  budget   Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([budgetId, order])
+  @@map("budget_offer_items")
+}
+
+/// Dados do evento coletados pelo cliente na página pública.
+/// Rascunho parcial: quase tudo nullable até o POST /submit.
+model EventDetails {
+  id       String @id @default(uuid())
+  budgetId String @unique @map("budget_id")
+  budget   Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  // --- contratante ---
+  // PF: name + document + email + phone
+  // PJ: legalName + tradeName + document + email + phone
+  contractorType String  @default("PF") @map("contractor_type") // PF | PJ
+  contractorName String? @map("contractor_name") // nome completo (PF) / razão social (PJ)
+  tradeName      String? @map("trade_name") // nome fantasia (PJ)
+  document       String? // CPF ou CNPJ, apenas dígitos
+  email          String?
+  phone          String? // WhatsApp, apenas dígitos
+
+  // --- local ---
+  venueName    String?  @map("venue_name")
+  zipCode      String?  @map("zip_code")
+  street       String?
+  streetNumber String?  @map("street_number")
+  district     String?
+  city         String?
+  state        String?
+  complement   String?
+  reference    String? // ponto de referência
+  accessNotes  String[] @default([]) @map("access_notes")
+  powerSupply  String?  @map("power_supply")
+  venueSize    String?  @map("venue_size")
+
+  // --- internet (necessária para o catálogo de karaokê) ---
+  internetAvailable String? @map("internet_available") // YES | NO | TO_VERIFY
+  internetDetail    String? @map("internet_detail")
+
+  // --- cronograma ---
+  // Horas muradas como "HH:MM" no fuso local do evento.
+  // A data fica em Budget.eventDate; a duração é derivada.
+  setupTime          String? @map("setup_time")
+  startTime          String? @map("start_time")
+  endTime            String? @map("end_time")
+  endsNextDay        Boolean @default(false) @map("ends_next_day")
+  pickupTime         String? @map("pickup_time")
+  startsFlexibility  String? @map("starts_flexibility")
+  onSiteContactName  String? @map("on_site_contact_name")
+  onSiteContactPhone String? @map("on_site_contact_phone")
+
+  // --- repertório ---
+  eventType       String?  @map("event_type")
+  guestCount      Int?     @map("guest_count")
+  musicStyles     String[] @default([]) @map("music_styles")
+  musicStyleOther String?  @map("music_style_other")
+
+  requestedExtras String[] @default([]) @map("requested_extras")
+  notes           String?
+
+  // --- ciclo ---
+  // maior etapa visitada, para retomar o "continuar depois"
+  stepSeen    Int       @default(0) @map("step_seen")
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("event_details")
+}
+
+/// Trilha de aceite do valor acordado.
+/// acceptedValue é snapshot do Budget.finalValue no momento do envio.
+model BudgetAcceptance {
+  id            String   @id @default(uuid())
+  acceptedName  String   @map("accepted_name")
+  acceptedValue Decimal  @map("accepted_value") @db.Decimal(10, 2)
+  acceptedAt    DateTime @default(now()) @map("accepted_at")
+  acceptedIp    String?  @map("accepted_ip")
+  userAgent     String?  @map("user_agent")
+
+  budgetId String @unique @map("budget_id")
+  budget   Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  @@map("budget_acceptances")
 }

@@ -65,6 +65,25 @@ export type BudgetSection = Prisma.BudgetSectionModel
  */
 export type BudgetItem = Prisma.BudgetItemModel
 /**
+ * Model BudgetOfferItem
+ * Linhas exibidas na página pública como "o que está incluso".
+ * Editável internamente. NÃO participa do cálculo de preço e não
+ * expõe equipamentos, quantidade ou valores ao cliente.
+ */
+export type BudgetOfferItem = Prisma.BudgetOfferItemModel
+/**
+ * Model EventDetails
+ * Dados do evento coletados pelo cliente na página pública.
+ * Rascunho parcial: quase tudo nullable até o POST /submit.
+ */
+export type EventDetails = Prisma.EventDetailsModel
+/**
+ * Model BudgetAcceptance
+ * Trilha de aceite do valor acordado.
+ * acceptedValue é snapshot do Budget.finalValue no momento do envio.
+ */
+export type BudgetAcceptance = Prisma.BudgetAcceptanceModel
+/**
  * Model User
  * 
  */

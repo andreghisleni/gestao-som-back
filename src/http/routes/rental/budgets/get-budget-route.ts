@@ -1,6 +1,6 @@
-import Elysia, { t } from "elysia";
-import { authMacro } from "~/auth";
-import { prisma } from "~/db/client";
+import Elysia, { t } from 'elysia';
+import { authMacro } from '~/auth';
+import { prisma } from '~/db/client';
 
 // Schema dos Itens (Nível 3)
 const budgetItemSchema = t.Object({
@@ -17,6 +17,16 @@ const budgetItemSchema = t.Object({
   description: t.Nullable(t.Optional(t.String())),
 });
 
+// Schema das linhas da proposta pública (descrição, sem preço unitário)
+const budgetOfferItemSchema = t.Object({
+  id: t.String(),
+  name: t.String(),
+  detail: t.Nullable(t.Optional(t.String())),
+  // AUTO = gerado das seções | MANUAL = escrita pelo usuário
+  source: t.String(),
+  order: t.Number(),
+});
+
 // Schema das Seções (Nível 2)
 const budgetSectionSchema = t.Object({
   id: t.String(),
@@ -27,7 +37,7 @@ const budgetSectionSchema = t.Object({
 // Schema do Orçamento (Nível 1 - Raiz)
 const budgetSchema = t.Object(
   {
-    id: t.String({ format: "uuid" }),
+    id: t.String({ format: 'uuid' }),
     clientName: t.String(),
     eventDate: t.Date(),
     status: t.String(),
@@ -40,24 +50,31 @@ const budgetSchema = t.Object(
     updatedAt: t.Date(),
     // Geta de Ambientes/Seções
     sections: t.Array(budgetSectionSchema),
+    // Linhas exibidas na página pública (editáveis pelo sistema)
+    offerItems: t.Array(budgetOfferItemSchema),
+    // Estado do link público: null = nunca gerado
+    publicToken: t.Nullable(t.String()),
+    publicTokenAt: t.Nullable(t.Date()),
+    publicTokenRevoked: t.Nullable(t.Date()),
+    publicViewCount: t.Number(),
   },
   {
-    description: "Schema for a complete budget with sections and items",
+    description: 'Schema for a complete budget with sections and items',
   }
 );
 
 const budgetParamsSchema = t.Object({
-  budgetId: t.String({ format: "uuid" }),
+  budgetId: t.String({ format: 'uuid' }),
 });
 
 export const getBudgetRoute = new Elysia().macro(authMacro).get(
-  "/:budgetId",
+  '/:budgetId',
   async ({ params, set }) => {
     const budget = await prisma.budget.findUnique({
       where: { id: params.budgetId },
       include: {
         sections: {
-          orderBy: { name: "asc" }, // Opcional: ordenar seções
+          orderBy: { name: 'asc' }, // Opcional: ordenar seções
           include: {
             items: {
               include: {
@@ -66,18 +83,21 @@ export const getBudgetRoute = new Elysia().macro(authMacro).get(
                 },
               },
               orderBy: [
-                { equipment: { categoryId: "asc" } },
-                { equipment: { name: "asc" } },
+                { equipment: { categoryId: 'asc' } },
+                { equipment: { name: 'asc' } },
               ], // Opcional: ordenar itens
             },
           },
+        },
+        offerItems: {
+          orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
         },
       },
     });
 
     if (!budget) {
       set.status = 404;
-      return { error: "Budget not found" };
+      return { error: 'Budget not found' };
     }
 
     return {
@@ -105,8 +125,8 @@ export const getBudgetRoute = new Elysia().macro(authMacro).get(
       404: t.Object({ error: t.String() }),
     },
     detail: {
-      summary: "Get full budget details by ID",
-      operationId: "getBudgetById",
+      summary: 'Get full budget details by ID',
+      operationId: 'getBudgetById',
     },
   }
 );
