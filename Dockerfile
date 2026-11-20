@@ -36,7 +36,7 @@ RUN bun build ./src/http/index.ts \
 	--minify-syntax \
 	--outfile server
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 WORKDIR /app
 
