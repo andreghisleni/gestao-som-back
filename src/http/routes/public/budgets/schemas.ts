@@ -1,5 +1,5 @@
-import type { Prisma } from '@db/client';
-import { t } from 'elysia';
+import type { Prisma } from "@db/client";
+import { t } from "elysia";
 
 /**
  * ÚNICO ponto onde a forma pública de um orçamento é decidida.
@@ -17,8 +17,17 @@ import { t } from 'elysia';
 
 export const publicBudgetInclude = {
   details: true,
-  offerItems: { orderBy: { order: 'asc' } },
+  offerItems: { orderBy: { order: "asc" } },
   acceptance: true,
+  /**
+   * Só o pedido ainda não respondido. As cópias antigas do histórico ficam do
+   * outro lado do muro: a página pública nunca lê versão anterior de resposta.
+   */
+  revisions: {
+    where: { resolvedAt: null },
+    orderBy: { version: "desc" },
+    take: 1,
+  },
 } satisfies Prisma.BudgetInclude;
 
 export type PublicBudgetSource = Prisma.BudgetGetPayload<{
@@ -26,15 +35,15 @@ export type PublicBudgetSource = Prisma.BudgetGetPayload<{
 }>;
 
 export const publicOfferItemSchema = t.Object({
-  name: t.String({ description: 'Ex.: Sistema de som' }),
+  name: t.String({ description: "Ex.: Sistema de som" }),
   detail: t.Nullable(
-    t.String({ description: 'Ex.: PA + subgrave para até 200 pessoas' })
+    t.String({ description: "Ex.: PA + subgrave para até 200 pessoas" }),
   ),
 });
 
 export const publicEventDetailsSchema = t.Object(
   {
-    id: t.String({ format: 'uuid' }),
+    id: t.String({ format: "uuid" }),
 
     contractorType: t.String(),
     contractorName: t.Nullable(t.String()),
@@ -80,7 +89,7 @@ export const publicEventDetailsSchema = t.Object(
     stepSeen: t.Number(),
     completedAt: t.Nullable(t.Date()),
   },
-  { description: 'Rascunho/resultado dos dados do evento coletados' }
+  { description: "Rascunho/resultado dos dados do evento coletados" },
 );
 
 export const publicBudgetSchema = t.Object(
@@ -98,16 +107,28 @@ export const publicBudgetSchema = t.Object(
         acceptedName: t.String(),
         acceptedValue: t.Number(),
         acceptedAt: t.Date(),
-      })
+      }),
     ),
     submitted: t.Boolean(),
+    /**
+     * Pedido de revisão em aberto: o escritório congelou a resposta anterior e
+     * o link voltou a aceitar envio. É a única coisa do histórico que o cliente
+     * enxerga — o motivo escrito por ele, nada além disso.
+     */
+    revisionRequest: t.Nullable(
+      t.Object({
+        version: t.Number(),
+        reason: t.Nullable(t.String()),
+        requestedAt: t.Nullable(t.Date()),
+      }),
+    ),
   },
-  { description: 'Proposta pública, sem decomposição de preços' }
+  { description: "Proposta pública, sem decomposição de preços" },
 );
 
 const str = (max = 160) => t.String({ maxLength: max });
 const nstr = (max = 160) => t.Nullable(str(max));
-const TIME_PATTERN = '^([01]\\d|2[0-3]):([0-5]\\d)$';
+const TIME_PATTERN = "^([01]\\d|2[0-3]):([0-5]\\d)$";
 
 /* ------------------------------------------------------------------ */
 /* Entrada                                                             */
@@ -115,16 +136,18 @@ const TIME_PATTERN = '^([01]\\d|2[0-3]):([0-5]\\d)$';
 
 export const contractorInputSchema = t.Object(
   {
-    type: t.Union([t.Literal('PF'), t.Literal('PJ')]),
+    type: t.Union([t.Literal("PF"), t.Literal("PJ")]),
     /** Nome completo (PF) ou razão social (PJ). */
     name: str(120),
     /** Nome fantasia — exigido apenas quando type = PJ. */
     tradeName: t.Optional(nstr(120)),
     document: t.String({ minLength: 11, maxLength: 18 }),
-    email: t.String({ format: 'email', maxLength: 160 }),
+    email: t.String({ format: "email", maxLength: 160 }),
     phone: t.String({ minLength: 10, maxLength: 20 }),
   },
-  { description: 'Contratante sem menção a nota fiscal (emissão é por recibo)' }
+  {
+    description: "Contratante sem menção a nota fiscal (emissão é por recibo)",
+  },
 );
 
 export const venueInputSchema = t.Object(
@@ -146,7 +169,7 @@ export const venueInputSchema = t.Object(
     internetAvailable: str(40),
     internetDetail: t.Optional(t.Nullable(str(280))),
   },
-  { description: 'Local completo do evento' }
+  { description: "Local completo do evento" },
 );
 
 export const scheduleInputSchema = t.Object(
@@ -160,14 +183,14 @@ export const scheduleInputSchema = t.Object(
     onSiteContactName: t.Optional(t.Nullable(str(120))),
     onSiteContactPhone: t.Optional(t.Nullable(str(20))),
   },
-  { description: 'Horários murados em HH:MM, com virada de dia explícita' }
+  { description: "Horários murados em HH:MM, com virada de dia explícita" },
 );
 
 export const eventInputSchema = t.Object(
   {
     eventType: t.Optional(t.Nullable(str(40))),
     guestCount: t.Optional(
-      t.Nullable(t.Number({ minimum: 1, maximum: 20_000 }))
+      t.Nullable(t.Number({ minimum: 1, maximum: 20_000 })),
     ),
     // Sem minItems: lista vazia precisa virar erro de campo
     // (`event.musicStyles`), não 422 genérico — é assim que o front destaca a
@@ -175,11 +198,11 @@ export const eventInputSchema = t.Object(
     musicStyles: t.Array(t.String({ maxLength: 40 }), { maxItems: 24 }),
     musicStyleOther: t.Optional(t.Nullable(str(280))),
     requestedExtras: t.Optional(
-      t.Array(t.String({ maxLength: 40 }), { maxItems: 12 })
+      t.Array(t.String({ maxLength: 40 }), { maxItems: 12 }),
     ),
     notes: t.Optional(t.Nullable(t.String({ maxLength: 2000 }))),
   },
-  { description: 'Repertório e detalhes do evento' }
+  { description: "Repertório e detalhes do evento" },
 );
 
 export const acceptanceInputSchema = t.Object(
@@ -194,7 +217,7 @@ export const acceptanceInputSchema = t.Object(
      */
     website: t.Optional(t.String({ maxLength: 200 })),
   },
-  { description: 'Aceite do valor acordado' }
+  { description: "Aceite do valor acordado" },
 );
 
 export const submitBodySchema = t.Object(
@@ -205,7 +228,7 @@ export const submitBodySchema = t.Object(
     event: eventInputSchema,
     acceptance: acceptanceInputSchema,
   },
-  { description: 'Payload completo do formulário público' }
+  { description: "Payload completo do formulário público" },
 );
 
 /** Autosave: qualquer subconjunto, sem obrigatoriedade. */
@@ -217,14 +240,14 @@ export const draftBodySchema = t.Object(
     schedule: t.Optional(t.Partial(scheduleInputSchema)),
     event: t.Optional(t.Partial(eventInputSchema)),
   },
-  { description: 'Rascunho parcial de uma etapa' }
+  { description: "Rascunho parcial de uma etapa" },
 );
 
 /* ------------------------------------------------------------------ */
 /* Mapper                                                              */
 /* ------------------------------------------------------------------ */
 
-const toPublicDetails = (details: PublicBudgetSource['details']) =>
+const toPublicDetails = (details: PublicBudgetSource["details"]) =>
   details && {
     id: details.id,
     contractorType: details.contractorType,
@@ -265,8 +288,23 @@ const toPublicDetails = (details: PublicBudgetSource['details']) =>
     completedAt: details.completedAt,
   };
 
+/**
+ * O pedido de revisão em aberto, se existir. No máximo um: o botão interno é
+ * idempotente enquanto o cliente não reenviar.
+ */
+const toRevisionRequest = (rows: PublicBudgetSource["revisions"]) => {
+  const pending = rows[0];
+  return pending
+    ? {
+        version: pending.version,
+        reason: pending.reason,
+        requestedAt: pending.requestedAt,
+      }
+    : null;
+};
+
 export const toPublicBudget = (budget: PublicBudgetSource) => ({
-  token: budget.publicToken ?? '',
+  token: budget.publicToken ?? "",
   clientName: budget.clientName,
   eventDate: budget.eventDate,
   status: budget.status,
@@ -281,5 +319,6 @@ export const toPublicBudget = (budget: PublicBudgetSource) => ({
     acceptedValue: Number(budget.acceptance.acceptedValue),
     acceptedAt: budget.acceptance.acceptedAt,
   },
+  revisionRequest: toRevisionRequest(budget.revisions),
   submitted: Boolean(budget.details?.completedAt),
 });

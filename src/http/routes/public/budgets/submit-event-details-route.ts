@@ -1,10 +1,10 @@
-import { Prisma } from '@db/client';
-import Elysia, { t } from 'elysia';
-import { prisma } from '~/db/client';
-import { buildProtocol, serviceDurationMinutes } from '~/utils/share-token';
-import { clientIp, findPublicBudget, isLinkUsable, NOT_FOUND } from './helpers';
-import { submitBodySchema } from './schemas';
-import { buildDetailsData, collectSubmissionErrors } from './validators';
+import { Prisma } from "@db/client";
+import Elysia, { t } from "elysia";
+import { prisma } from "~/db/client";
+import { buildProtocol, serviceDurationMinutes } from "~/utils/share-token";
+import { clientIp, findPublicBudget, isLinkUsable, NOT_FOUND } from "./helpers";
+import { submitBodySchema } from "./schemas";
+import { buildDetailsData, collectSubmissionErrors } from "./validators";
 
 const tokenParamsSchema = t.Object({
   token: t.String({ minLength: 10, maxLength: 40 }),
@@ -13,17 +13,19 @@ const tokenParamsSchema = t.Object({
 export const submitResponseSchema = t.Object(
   {
     protocol: t.String({
-      description: 'Código curto para o cliente citar no WhatsApp',
+      description: "Código curto para o cliente citar no WhatsApp",
     }),
     submittedAt: t.Date(),
     agreedValue: t.Number(),
     status: t.String(),
     durationMinutes: t.Nullable(
-      t.Number({ description: 'Início → término, já com a virada de dia' })
+      t.Number({ description: "Início → término, já com a virada de dia" }),
     ),
     alreadySubmitted: t.Boolean(),
+    /** true quando este envio fechou um pedido de revisão em aberto. */
+    revisionResolved: t.Boolean(),
   },
-  { description: 'Confirmação do envio dos dados do evento' }
+  { description: "Confirmação do envio dos dados do evento" },
 );
 
 /**
@@ -40,7 +42,7 @@ export const submitResponseSchema = t.Object(
  *    na proposta.
  */
 export const submitEventDetailsRoute = new Elysia().post(
-  '/:token/submit',
+  "/:token/submit",
   async ({ params, body, set, request }) => {
     const budget = await findPublicBudget(params.token);
     if (!isLinkUsable(budget)) {
@@ -52,7 +54,7 @@ export const submitEventDetailsRoute = new Elysia().post(
     if (errors.length > 0) {
       set.status = 400;
       return {
-        error: 'Revise os campos destacados antes de enviar.',
+        error: "Revise os campos destacados antes de enviar.",
         fields: errors,
       };
     }
@@ -61,9 +63,16 @@ export const submitEventDetailsRoute = new Elysia().post(
     const submittedAt = new Date();
     const alreadySubmitted = Boolean(budget.details?.completedAt);
 
+    // O botão "pedir nova revisão" deixou exatamente uma linha sem resolução.
+    const openReview = budget.revisions[0] ?? null;
+
     const acceptedValue = new Prisma.Decimal(budget.finalValue);
+    // Reenviar depois de um pedido de revisão é um aceite novo, com data, IP e
+    // user agent novos: a trilha anterior já está congelada no histórico, então
+    // aqui a linha 1:1 pode (e deve) ser sobrescrita.
     const needsNewAcceptance =
       !budget.acceptance ||
+      openReview !== null ||
       Number(budget.acceptance.acceptedValue) !== Number(acceptedValue);
 
     await prisma.$transaction([
@@ -91,25 +100,33 @@ export const submitEventDetailsRoute = new Elysia().post(
                 acceptedValue,
                 acceptedAt: submittedAt,
                 acceptedIp: clientIp(request),
-                userAgent: request.headers.get('user-agent'),
+                userAgent: request.headers.get("user-agent"),
               },
               update: {
                 acceptedName: body.acceptance.name.trim(),
                 acceptedValue,
                 acceptedAt: submittedAt,
                 acceptedIp: clientIp(request),
-                userAgent: request.headers.get('user-agent'),
+                userAgent: request.headers.get("user-agent"),
               },
             }),
           ]
         : []),
+      ...(openReview
+        ? [
+            prisma.budgetEventRevision.update({
+              where: { id: openReview.id },
+              data: { resolvedAt: submittedAt },
+            }),
+          ]
+        : []),
       // Reabrir um orçamento já confirmado é decisão sua, não do cliente.
-      ...(budget.status === 'CONFIRMED'
+      ...(budget.status === "CONFIRMED"
         ? []
         : [
             prisma.budget.update({
               where: { id: budget.id },
-              data: { status: 'DETAILS_SENT' },
+              data: { status: "DETAILS_SENT" },
             }),
           ]),
     ]);
@@ -128,6 +145,7 @@ export const submitEventDetailsRoute = new Elysia().post(
         endsNextDay: details?.endsNextDay,
       }),
       alreadySubmitted,
+      revisionResolved: openReview !== null,
     };
   },
   {
@@ -139,8 +157,8 @@ export const submitEventDetailsRoute = new Elysia().post(
       404: t.Object({ error: t.String() }),
     },
     detail: {
-      summary: 'Submit event details and accept the agreed value (public)',
-      operationId: 'submitPublicEventDetails',
+      summary: "Submit event details and accept the agreed value (public)",
+      operationId: "submitPublicEventDetails",
     },
-  }
+  },
 );

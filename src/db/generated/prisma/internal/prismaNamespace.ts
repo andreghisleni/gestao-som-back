@@ -392,6 +392,7 @@ export const ModelName = {
   BudgetOfferItem: 'BudgetOfferItem',
   EventDetails: 'EventDetails',
   BudgetAcceptance: 'BudgetAcceptance',
+  BudgetEventRevision: 'BudgetEventRevision',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "category" | "equipment" | "budget" | "budgetSection" | "budgetItem" | "budgetOfferItem" | "eventDetails" | "budgetAcceptance" | "user" | "session" | "account" | "verification"
+    modelProps: "category" | "equipment" | "budget" | "budgetSection" | "budgetItem" | "budgetOfferItem" | "eventDetails" | "budgetAcceptance" | "budgetEventRevision" | "user" | "session" | "account" | "verification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1007,6 +1008,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BudgetEventRevision: {
+      payload: Prisma.$BudgetEventRevisionPayload<ExtArgs>
+      fields: Prisma.BudgetEventRevisionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BudgetEventRevisionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BudgetEventRevisionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload>
+        }
+        findFirst: {
+          args: Prisma.BudgetEventRevisionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BudgetEventRevisionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload>
+        }
+        findMany: {
+          args: Prisma.BudgetEventRevisionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload>[]
+        }
+        create: {
+          args: Prisma.BudgetEventRevisionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload>
+        }
+        createMany: {
+          args: Prisma.BudgetEventRevisionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BudgetEventRevisionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload>[]
+        }
+        delete: {
+          args: Prisma.BudgetEventRevisionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload>
+        }
+        update: {
+          args: Prisma.BudgetEventRevisionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload>
+        }
+        deleteMany: {
+          args: Prisma.BudgetEventRevisionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BudgetEventRevisionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BudgetEventRevisionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload>[]
+        }
+        upsert: {
+          args: Prisma.BudgetEventRevisionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetEventRevisionPayload>
+        }
+        aggregate: {
+          args: Prisma.BudgetEventRevisionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBudgetEventRevision>
+        }
+        groupBy: {
+          args: Prisma.BudgetEventRevisionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BudgetEventRevisionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BudgetEventRevisionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BudgetEventRevisionCountAggregateOutputType> | number
+        }
+      }
+    }
     User: {
       payload: Prisma.$UserPayload<ExtArgs>
       fields: Prisma.UserFieldRefs
@@ -1487,6 +1562,27 @@ export const BudgetAcceptanceScalarFieldEnum = {
 export type BudgetAcceptanceScalarFieldEnum = (typeof BudgetAcceptanceScalarFieldEnum)[keyof typeof BudgetAcceptanceScalarFieldEnum]
 
 
+export const BudgetEventRevisionScalarFieldEnum = {
+  id: 'id',
+  version: 'version',
+  data: 'data',
+  submittedAt: 'submittedAt',
+  acceptedName: 'acceptedName',
+  acceptedValue: 'acceptedValue',
+  acceptedAt: 'acceptedAt',
+  acceptedIp: 'acceptedIp',
+  acceptedUserAgent: 'acceptedUserAgent',
+  reason: 'reason',
+  requestedBy: 'requestedBy',
+  requestedAt: 'requestedAt',
+  resolvedAt: 'resolvedAt',
+  createdAt: 'createdAt',
+  budgetId: 'budgetId'
+} as const
+
+export type BudgetEventRevisionScalarFieldEnum = (typeof BudgetEventRevisionScalarFieldEnum)[keyof typeof BudgetEventRevisionScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1558,6 +1654,13 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -1572,6 +1675,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1654,6 +1766,20 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 /**
@@ -1743,6 +1869,7 @@ export type GlobalOmitConfig = {
   budgetOfferItem?: Prisma.BudgetOfferItemOmit
   eventDetails?: Prisma.EventDetailsOmit
   budgetAcceptance?: Prisma.BudgetAcceptanceOmit
+  budgetEventRevision?: Prisma.BudgetEventRevisionOmit
   user?: Prisma.UserOmit
   session?: Prisma.SessionOmit
   account?: Prisma.AccountOmit

@@ -68,6 +68,9 @@ model Budget {
   details    EventDetails?
   offerItems BudgetOfferItem[]
   acceptance BudgetAcceptance?
+  // Histórico congelado a cada "pedir nova revisão": permite comparar
+  // uma resposta do formulário com a seguinte.
+  revisions  BudgetEventRevision[]
 
   @@map("budgets")
 }
@@ -207,4 +210,47 @@ model BudgetAcceptance {
   budget   Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
 
   @@map("budget_acceptances")
+}
+
+/// Cópia congelada de uma resposta do formulário público.
+///
+/// É criada pelo botão "Pedir nova revisão" na tela interna: no mesmo
+/// instante em que o link volta a aceitar envio, a resposta que estava em
+/// vigor (e o aceite correspondente) deixa de ser sobrescrita e vira
+/// histórico. `resolvedAt` preenchido significa que o cliente já respondeu o
+/// pedido; `resolvedAt` null é o pedido em aberto.
+model BudgetEventRevision {
+  id      String @id @default(uuid())
+  version Int
+
+  /// Todos os campos de `EventDetails` no momento do congelamento.
+  /// JSON e não colunas repetidas de propósito: a cópia precisa continuar
+  /// fiel mesmo depois que o formulário ganhar ou perder campos.
+  data Json
+
+  /// `EventDetails.completedAt` congelado (quando o cliente enviou).
+  submittedAt DateTime? @map("submitted_at")
+
+  /// Aceite vigente no congelamento. `BudgetAcceptance` é 1:1 e seria
+  /// sobrescrito no reenvio, então a trilha anterior mora aqui.
+  acceptedName      String?   @map("accepted_name")
+  acceptedValue     Decimal?  @map("accepted_value") @db.Decimal(10, 2)
+  acceptedAt        DateTime? @map("accepted_at")
+  acceptedIp        String?   @map("accepted_ip")
+  acceptedUserAgent String?   @map("accepted_user_agent")
+
+  /// O pedido de revisão que originou esta cópia.
+  reason      String?
+  requestedBy String?   @map("requested_by")
+  requestedAt DateTime? @map("requested_at")
+  resolvedAt  DateTime? @map("resolved_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  budgetId String @map("budget_id")
+  budget   Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  @@unique([budgetId, version])
+  @@index([budgetId])
+  @@map("budget_event_revisions")
 }

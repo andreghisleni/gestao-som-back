@@ -84,6 +84,17 @@ export type EventDetails = Prisma.EventDetailsModel
  */
 export type BudgetAcceptance = Prisma.BudgetAcceptanceModel
 /**
+ * Model BudgetEventRevision
+ * Cópia congelada de uma resposta do formulário público.
+ * 
+ * É criada pelo botão "Pedir nova revisão" na tela interna: no mesmo
+ * instante em que o link volta a aceitar envio, a resposta que estava em
+ * vigor (e o aceite correspondente) deixa de ser sobrescrita e vira
+ * histórico. `resolvedAt` preenchido significa que o cliente já respondeu o
+ * pedido; `resolvedAt` null é o pedido em aberto.
+ */
+export type BudgetEventRevision = Prisma.BudgetEventRevisionModel
+/**
  * Model User
  * 
  */

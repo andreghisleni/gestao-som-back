@@ -59,6 +59,7 @@ export const ModelName = {
   BudgetOfferItem: 'BudgetOfferItem',
   EventDetails: 'EventDetails',
   BudgetAcceptance: 'BudgetAcceptance',
+  BudgetEventRevision: 'BudgetEventRevision',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
@@ -226,6 +227,27 @@ export const BudgetAcceptanceScalarFieldEnum = {
 export type BudgetAcceptanceScalarFieldEnum = (typeof BudgetAcceptanceScalarFieldEnum)[keyof typeof BudgetAcceptanceScalarFieldEnum]
 
 
+export const BudgetEventRevisionScalarFieldEnum = {
+  id: 'id',
+  version: 'version',
+  data: 'data',
+  submittedAt: 'submittedAt',
+  acceptedName: 'acceptedName',
+  acceptedValue: 'acceptedValue',
+  acceptedAt: 'acceptedAt',
+  acceptedIp: 'acceptedIp',
+  acceptedUserAgent: 'acceptedUserAgent',
+  reason: 'reason',
+  requestedBy: 'requestedBy',
+  requestedAt: 'requestedAt',
+  resolvedAt: 'resolvedAt',
+  createdAt: 'createdAt',
+  budgetId: 'budgetId'
+} as const
+
+export type BudgetEventRevisionScalarFieldEnum = (typeof BudgetEventRevisionScalarFieldEnum)[keyof typeof BudgetEventRevisionScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -297,6 +319,13 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: 'JsonNull'
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -311,4 +340,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: 'DbNull',
+  JsonNull: 'JsonNull',
+  AnyNull: 'AnyNull'
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

@@ -1,19 +1,19 @@
 /** biome-ignore-all lint/performance/useTopLevelRegex: <explanation> */
-import type { Prisma } from '@db/client';
-import type { Static } from 'elysia';
+import type { Prisma } from "@db/client";
+import type { Static } from "elysia";
 import {
   isKnownOption,
   isKnownOptionList,
   type optionIds,
-} from '~/constants/event-options';
+} from "~/constants/event-options";
 import {
   isValidDocument,
   isValidEmail,
   isValidPhone,
   onlyDigits,
-} from '~/utils/documents';
-import { minutesFromTime, serviceDurationMinutes } from '~/utils/share-token';
-import type { draftBodySchema, submitBodySchema } from './schemas';
+} from "~/utils/documents";
+import { minutesFromTime, serviceDurationMinutes } from "~/utils/share-token";
+import type { draftBodySchema, submitBodySchema } from "./schemas";
 
 type Draft = Static<typeof draftBodySchema>;
 type Submission = Static<typeof submitBodySchema>;
@@ -28,7 +28,7 @@ type Submission = Static<typeof submitBodySchema>;
  */
 
 const text = (value: string | null | undefined, max = 200) => {
-  const clean = (value ?? '').replace(/\s+/g, ' ').trim();
+  const clean = (value ?? "").replace(/\s+/g, " ").trim();
   if (!clean) {
     return null;
   }
@@ -47,26 +47,26 @@ const digitsOrNull = (value: string | null | undefined, size?: number) => {
 };
 
 const uF = (value: string | null | undefined) => {
-  const clean = (value ?? '').trim().toUpperCase().slice(0, 2);
+  const clean = (value ?? "").trim().toUpperCase().slice(0, 2);
   return /^[A-Z]{2}$/.test(clean) ? clean : null;
 };
 
 const knownList = (
   key: Parameters<typeof isKnownOptionList>[0],
-  values: string[] | null | undefined
-) => (values ?? []).filter((value) => isKnownOption(key, value));
+  values: string[] | null | undefined,
+) => [...new Set((values ?? []).filter((value) => isKnownOption(key, value)))];
 
 /** Um dos dois formatos aceitos: com ou sem máscara. */
 const timeOrNull = (value: string | null | undefined) =>
-  minutesFromTime(value) == null ? null : (value ?? '').trim().slice(0, 5);
+  minutesFromTime(value) == null ? null : (value ?? "").trim().slice(0, 5);
 
-export const normalizeContractor = (input: Draft['contractor']) => {
+export const normalizeContractor = (input: Draft["contractor"]) => {
   if (!input) {
     return {};
   }
   const type =
     // biome-ignore lint/style/noNestedTernary: <explanation>
-    input.type === 'PJ' ? 'PJ' : input.type === 'PF' ? 'PF' : undefined;
+    input.type === "PJ" ? "PJ" : input.type === "PF" ? "PF" : undefined;
   return {
     ...(type && { contractorType: type }),
     contractorName: text(input.name, 120),
@@ -77,7 +77,7 @@ export const normalizeContractor = (input: Draft['contractor']) => {
   };
 };
 
-export const normalizeVenue = (input: Draft['venue']) => {
+export const normalizeVenue = (input: Draft["venue"]) => {
   if (!input) {
     return {};
   }
@@ -91,16 +91,16 @@ export const normalizeVenue = (input: Draft['venue']) => {
     state: uF(input.state),
     complement: text(input.complement, 160),
     reference: text(input.reference, 280),
-    accessNotes: knownList('accessNotes', input.accessNotes),
-    powerSupply: isKnownOption('powerSupply', input.powerSupply)
+    accessNotes: knownList("accessNotes", input.accessNotes),
+    powerSupply: isKnownOption("powerSupply", input.powerSupply)
       ? input.powerSupply
       : null,
-    venueSize: isKnownOption('venueSizes', input.venueSize)
+    venueSize: isKnownOption("venueSizes", input.venueSize)
       ? input.venueSize
       : null,
     internetAvailable: isKnownOption(
-      'internetAvailability',
-      input.internetAvailable
+      "internetAvailability",
+      input.internetAvailable,
     )
       ? input.internetAvailable
       : null,
@@ -108,7 +108,7 @@ export const normalizeVenue = (input: Draft['venue']) => {
   };
 };
 
-export const normalizeSchedule = (input: Draft['schedule']) => {
+export const normalizeSchedule = (input: Draft["schedule"]) => {
   if (!input) {
     return {};
   }
@@ -119,8 +119,8 @@ export const normalizeSchedule = (input: Draft['schedule']) => {
     endsNextDay: Boolean(input.endsNextDay),
     pickupTime: timeOrNull(input.pickupTime),
     startsFlexibility: isKnownOption(
-      'startsFlexibility',
-      input.startsFlexibility
+      "startsFlexibility",
+      input.startsFlexibility,
     )
       ? input.startsFlexibility
       : null,
@@ -131,21 +131,21 @@ export const normalizeSchedule = (input: Draft['schedule']) => {
   };
 };
 
-export const normalizeEvent = (input: Draft['event']) => {
+export const normalizeEvent = (input: Draft["event"]) => {
   if (!input) {
     return {};
   }
   return {
-    eventType: isKnownOption('eventTypes', input.eventType)
+    eventType: isKnownOption("eventTypes", input.eventType)
       ? input.eventType
       : null,
     guestCount:
       input.guestCount != null && input.guestCount > 0
         ? Math.min(Math.trunc(input.guestCount), 20_000)
         : null,
-    musicStyles: knownList('musicStyles', input.musicStyles),
+    musicStyles: knownList("musicStyles", input.musicStyles),
     musicStyleOther: text(input.musicStyleOther, 280),
-    requestedExtras: knownList('requestedExtras', input.requestedExtras),
+    requestedExtras: knownList("requestedExtras", input.requestedExtras),
     notes: text(input.notes, 2000),
   };
 };
@@ -162,7 +162,7 @@ export const normalizeDraft = (body: Draft) => {
   // (etapa que o cliente ainda não visitou) ficam fora do update de propósito.
   // `budgetId` pertence à rota (é ela quem conhece o dono do link), então fica
   // fora deste tipo para o spread não sobrescrever o valor real.
-  return data as Omit<Prisma.EventDetailsUncheckedCreateInput, 'budgetId'>;
+  return data as Omit<Prisma.EventDetailsUncheckedCreateInput, "budgetId">;
 };
 
 /* ------------------------------------------------------------------ */
@@ -181,50 +181,50 @@ export const collectSubmissionErrors = (body: Submission): string[] => {
   const { contractor, venue, schedule, event, acceptance } = body;
 
   if (acceptance.website) {
-    errors.push('acceptance.website');
+    errors.push("acceptance.website");
   }
 
   // ---- contratante ----
   if (!contractor.name || contractor.name.trim().length < 3) {
-    errors.push('contractor.name');
+    errors.push("contractor.name");
   }
   if (!isValidDocument(contractor.document, contractor.type)) {
-    errors.push('contractor.document');
+    errors.push("contractor.document");
   }
-  if (contractor.type === 'PJ' && !text(contractor.tradeName, 120)) {
-    errors.push('contractor.tradeName');
+  if (contractor.type === "PJ" && !text(contractor.tradeName, 120)) {
+    errors.push("contractor.tradeName");
   }
   if (!isValidEmail(contractor.email)) {
-    errors.push('contractor.email');
+    errors.push("contractor.email");
   }
   if (!isValidPhone(contractor.phone)) {
-    errors.push('contractor.phone');
+    errors.push("contractor.phone");
   }
 
   // ---- local ----
   if (digitsOrNull(venue.zipCode, 8) === null) {
-    errors.push('venue.zipCode');
+    errors.push("venue.zipCode");
   }
   if (!text(venue.street, 200)) {
-    errors.push('venue.street');
+    errors.push("venue.street");
   }
   if (!text(venue.streetNumber, 20)) {
-    errors.push('venue.streetNumber');
+    errors.push("venue.streetNumber");
   }
   if (!text(venue.district, 120)) {
-    errors.push('venue.district');
+    errors.push("venue.district");
   }
   if (!text(venue.city, 120)) {
-    errors.push('venue.city');
+    errors.push("venue.city");
   }
   if (uF(venue.state) === null) {
-    errors.push('venue.state');
+    errors.push("venue.state");
   }
-  if (!isKnownOption('internetAvailability', venue.internetAvailable)) {
-    errors.push('venue.internetAvailable');
+  if (!isKnownOption("internetAvailability", venue.internetAvailable)) {
+    errors.push("venue.internetAvailable");
   }
-  if (!isKnownOptionList('accessNotes', venue.accessNotes)) {
-    errors.push('venue.accessNotes');
+  if (!isKnownOptionList("accessNotes", venue.accessNotes)) {
+    errors.push("venue.accessNotes");
   }
 
   // ---- cronograma ----
@@ -232,18 +232,18 @@ export const collectSubmissionErrors = (body: Submission): string[] => {
   const start = minutesFromTime(schedule.startTime);
   const end = minutesFromTime(schedule.endTime);
   if (setup == null) {
-    errors.push('schedule.setupTime');
+    errors.push("schedule.setupTime");
   }
   if (start == null) {
-    errors.push('schedule.startTime');
+    errors.push("schedule.startTime");
   }
   if (end == null) {
-    errors.push('schedule.endTime');
+    errors.push("schedule.endTime");
   }
 
   if (start != null && setup != null && setup >= start) {
     // montagem depois do início não existe; equal também é ambíguo demais
-    errors.push('schedule.setupTime');
+    errors.push("schedule.setupTime");
   }
   if (
     serviceDurationMinutes({
@@ -252,29 +252,29 @@ export const collectSubmissionErrors = (body: Submission): string[] => {
       endsNextDay: schedule.endsNextDay,
     }) === null
   ) {
-    errors.push('schedule.endTime');
+    errors.push("schedule.endTime");
   }
   const pickup = minutesFromTime(schedule.pickupTime ?? null);
   if (schedule.pickupTime && pickup == null) {
-    errors.push('schedule.pickupTime');
+    errors.push("schedule.pickupTime");
   }
 
   // ---- repertório ----
   if (event.musicStyles.length < 1) {
-    errors.push('event.musicStyles');
+    errors.push("event.musicStyles");
   }
-  if (!isKnownOptionList('musicStyles', event.musicStyles)) {
-    errors.push('event.musicStyles');
+  if (!isKnownOptionList("musicStyles", event.musicStyles)) {
+    errors.push("event.musicStyles");
   }
-  if (!isKnownOptionList('requestedExtras', event.requestedExtras ?? [])) {
-    errors.push('event.requestedExtras');
+  if (!isKnownOptionList("requestedExtras", event.requestedExtras ?? [])) {
+    errors.push("event.requestedExtras");
   }
-  if (event.eventType && !isKnownOption('eventTypes', event.eventType)) {
-    errors.push('event.eventType');
+  if (event.eventType && !isKnownOption("eventTypes", event.eventType)) {
+    errors.push("event.eventType");
   }
 
   if (acceptance.name.trim().length < 3) {
-    errors.push('acceptance.name');
+    errors.push("acceptance.name");
   }
 
   return [...new Set(errors)];
