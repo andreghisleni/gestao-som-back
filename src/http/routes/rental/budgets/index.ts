@@ -3,6 +3,7 @@ import { cloneBudgetRoute } from "./clone-budget-route";
 import { createBudgetRoute } from "./create-budget-route";
 import { getBudgetEventDetailsRoute } from "./event/get-event-details-route";
 import { requestEventReviewRoute } from "./event/request-event-review-route";
+import { updateBudgetEventContractorRoute } from "./event/update-event-contractor-route";
 import { getBudgetRoute } from "./get-budget-route";
 import { getBudgetsRoute } from "./get-budgets-route";
 import { createBudgetItemRoute } from "./items/create-item-route";
@@ -54,6 +55,8 @@ export const budgetRoutes = new Elysia({
   .use(revokeShareLinkRoute)
   .use(rotateShareLinkRoute)
 
-  // Resposta do formulário público: leitura e pedido de nova revisão
+  // Resposta do formulário público: leitura, pré-preenchimento do contratante
+  // e pedido de nova revisão
   .use(getBudgetEventDetailsRoute)
+  .use(updateBudgetEventContractorRoute)
   .use(requestEventReviewRoute);

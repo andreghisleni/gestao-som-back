@@ -55,13 +55,6 @@ export const requestEventReviewRoute = new Elysia().macro(authMacro).post(
       return { error: "Budget not found" };
     }
 
-    if (!budget.details) {
-      set.status = 400;
-      return {
-        error: "O cliente ainda não respondeu pelo link da proposta.",
-      };
-    }
-
     const open = budget.revisions.find((item) => !item.resolvedAt);
     if (open) {
       // Nada duplicado: o pedido em aberto já é a cópia mais recente.
@@ -69,6 +62,15 @@ export const requestEventReviewRoute = new Elysia().macro(authMacro).post(
       return {
         created: false,
         ...toBudgetEventDetails(budget, await viewSummary(budget.id)),
+      };
+    }
+
+    // `completedAt` e não a linha: pré-preencher o contratante cria a linha sem
+    // o cliente ter respondido. Congelar aqui guardaria uma versão vazia.
+    if (!budget.details?.completedAt) {
+      set.status = 400;
+      return {
+        error: "O cliente ainda não respondeu pelo link da proposta.",
       };
     }
 
