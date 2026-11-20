@@ -1,5 +1,6 @@
 import type { Prisma } from "@db/client";
 import { t } from "elysia";
+import type { PublicViewSummary } from "~/utils/public-views";
 import {
   buildProtocol,
   buildPublicUrl,
@@ -114,6 +115,39 @@ export const eventRevisionSchema = t.Object(
   { description: "Cópia congelada de uma resposta anterior" },
 );
 
+export const eventViewDeviceSchema = t.Object({
+  /** "iPhone · Safari" — derivado do user-agent, sem versão. */
+  device: t.String(),
+  views: t.Number(),
+  firstSeenAt: t.Date(),
+  lastSeenAt: t.Date(),
+});
+
+/**
+ * Visitas do link público. A unidade é visita e não request: recarregar a
+ * página dentro de `windowMinutes` não cria outra.
+ */
+export const eventViewingSchema = t.Object(
+  {
+    /** Contador do orçamento (`Budget.publicViewCount`), o número do cabeçalho. */
+    visits: t.Number(),
+    /** Dispositivos distintos que já abriram o link. */
+    devices: t.Number(),
+    /**
+     * Somatório que esta contagem nova já viu. Em link criado antes dela pode
+     * ser menor que `visits` — o número antigo continuava valendo, só para de
+     * subir errado.
+     */
+    trackedVisits: t.Number(),
+    windowMinutes: t.Number(),
+    firstViewAt: t.Nullable(t.Date()),
+    lastViewAt: t.Nullable(t.Date()),
+    /** Mais recente primeiro, no máximo 10 linhas. */
+    byDevice: t.Array(eventViewDeviceSchema),
+  },
+  { description: "Visitas do link público, com janela anti-recontagem" },
+);
+
 const eventDetailsResponseProperties = {
   budgetId: t.String({ format: "uuid" }),
   status: t.String(),
@@ -125,6 +159,7 @@ const eventDetailsResponseProperties = {
   protocol: t.Nullable(t.String()),
   publicUrl: t.Nullable(t.String()),
   publicViewCount: t.Number(),
+  viewing: eventViewingSchema,
   submitted: t.Boolean(),
   durationMinutes: t.Nullable(t.Number()),
   details: t.Nullable(internalEventDetailsSchema),
@@ -252,7 +287,10 @@ const toRevision = (row: RevisionRow) => ({
   resolvedAt: row.resolvedAt,
 });
 
-export const toBudgetEventDetails = (budget: InternalEventSource) => {
+export const toBudgetEventDetails = (
+  budget: InternalEventSource,
+  views: PublicViewSummary,
+) => {
   const details = budget.details;
   const revisions = budget.revisions.map(toRevision);
 
@@ -270,6 +308,20 @@ export const toBudgetEventDetails = (budget: InternalEventSource) => {
         ? buildPublicUrl(budget.publicToken)
         : null,
     publicViewCount: budget.publicViewCount,
+    viewing: {
+      visits: budget.publicViewCount,
+      devices: views.devices,
+      trackedVisits: views.trackedVisits,
+      windowMinutes: views.windowMinutes,
+      firstViewAt: views.firstViewAt,
+      lastViewAt: views.lastViewAt,
+      byDevice: views.rows.map((row) => ({
+        device: row.device,
+        views: row.views,
+        firstSeenAt: row.firstSeenAt,
+        lastSeenAt: row.lastSeenAt,
+      })),
+    },
     submitted: Boolean(details?.completedAt),
     durationMinutes: serviceDurationMinutes({
       startTime: details?.startTime,

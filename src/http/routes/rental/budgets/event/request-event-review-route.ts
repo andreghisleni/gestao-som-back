@@ -2,6 +2,7 @@ import type { Prisma } from "@db/client";
 import Elysia, { t } from "elysia";
 import { authMacro } from "~/auth";
 import { prisma } from "~/db/client";
+import { viewSummary } from "~/utils/public-views";
 import {
   internalEventInclude,
   requestEventReviewResponseSchema,
@@ -65,7 +66,10 @@ export const requestEventReviewRoute = new Elysia().macro(authMacro).post(
     if (open) {
       // Nada duplicado: o pedido em aberto já é a cópia mais recente.
       set.status = 200;
-      return { created: false, ...toBudgetEventDetails(budget) };
+      return {
+        created: false,
+        ...toBudgetEventDetails(budget, await viewSummary(budget.id)),
+      };
     }
 
     const reason = (body.reason ?? "").replace(/\s+/g, " ").trim();
@@ -111,7 +115,10 @@ export const requestEventReviewRoute = new Elysia().macro(authMacro).post(
     set.status = 201;
     return {
       created: true,
-      ...toBudgetEventDetails(fresh as typeof budget),
+      ...toBudgetEventDetails(
+        fresh as typeof budget,
+        await viewSummary(budget.id),
+      ),
     };
   },
   {

@@ -65,12 +65,15 @@ model Budget {
   publicTokenRevoked DateTime? @map("public_token_revoked")
   publicViewCount    Int       @default(0) @map("public_view_count")
 
-  details    EventDetails?
-  offerItems BudgetOfferItem[]
-  acceptance BudgetAcceptance?
+  details     EventDetails?
+  offerItems  BudgetOfferItem[]
+  acceptance  BudgetAcceptance?
   // Histórico congelado a cada "pedir nova revisão": permite comparar
   // uma resposta do formulário com a seguinte.
-  revisions  BudgetEventRevision[]
+  revisions   BudgetEventRevision[]
+  // Visitas do link público, uma linha por visitante (hash de IP+dispositivo).
+  // É o que dá para responder "ele abriu de onde e quando?".
+  publicViews BudgetPublicView[]
 
   @@map("budgets")
 }
@@ -253,4 +256,27 @@ model BudgetEventRevision {
   @@unique([budgetId, version])
   @@index([budgetId])
   @@map("budget_event_revisions")
+}
+
+/// Visitas do link público por visitante. A unidade é visita, não request:
+/// recarregar dentro de `PUBLIC_VIEW_WINDOW_MINUTES` não cria outra linha nem
+/// sobe `Budget.publicViewCount`. `visitor_key` é sha256(ip · dispositivo),
+/// truncado — o IP puro nunca fica guardado aqui.
+model BudgetPublicView {
+  id          String   @id @default(uuid())
+  visitorKey  String   @map("visitor_key")
+  /// Rótulo legível derivado do user-agent ("iPhone · Safari").
+  device      String
+  /// User-agent bruto, truncado, para conferência.
+  userAgent   String?  @map("user_agent") @db.VarChar(200)
+  views       Int      @default(1)
+  firstSeenAt DateTime @default(now()) @map("first_seen_at")
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  budgetId    String   @map("budget_id")
+  budget      Budget   @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  @@unique([budgetId, visitorKey])
+  @@index([budgetId, lastSeenAt])
+  @@map("budget_public_views")
 }

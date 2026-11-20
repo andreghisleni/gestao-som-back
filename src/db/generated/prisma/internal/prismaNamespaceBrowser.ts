@@ -60,6 +60,7 @@ export const ModelName = {
   EventDetails: 'EventDetails',
   BudgetAcceptance: 'BudgetAcceptance',
   BudgetEventRevision: 'BudgetEventRevision',
+  BudgetPublicView: 'BudgetPublicView',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
@@ -246,6 +247,21 @@ export const BudgetEventRevisionScalarFieldEnum = {
 } as const
 
 export type BudgetEventRevisionScalarFieldEnum = (typeof BudgetEventRevisionScalarFieldEnum)[keyof typeof BudgetEventRevisionScalarFieldEnum]
+
+
+export const BudgetPublicViewScalarFieldEnum = {
+  id: 'id',
+  visitorKey: 'visitorKey',
+  device: 'device',
+  userAgent: 'userAgent',
+  views: 'views',
+  firstSeenAt: 'firstSeenAt',
+  lastSeenAt: 'lastSeenAt',
+  updatedAt: 'updatedAt',
+  budgetId: 'budgetId'
+} as const
+
+export type BudgetPublicViewScalarFieldEnum = (typeof BudgetPublicViewScalarFieldEnum)[keyof typeof BudgetPublicViewScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {

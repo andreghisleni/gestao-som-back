@@ -393,6 +393,7 @@ export const ModelName = {
   EventDetails: 'EventDetails',
   BudgetAcceptance: 'BudgetAcceptance',
   BudgetEventRevision: 'BudgetEventRevision',
+  BudgetPublicView: 'BudgetPublicView',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
@@ -412,7 +413,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "category" | "equipment" | "budget" | "budgetSection" | "budgetItem" | "budgetOfferItem" | "eventDetails" | "budgetAcceptance" | "budgetEventRevision" | "user" | "session" | "account" | "verification"
+    modelProps: "category" | "equipment" | "budget" | "budgetSection" | "budgetItem" | "budgetOfferItem" | "eventDetails" | "budgetAcceptance" | "budgetEventRevision" | "budgetPublicView" | "user" | "session" | "account" | "verification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1082,6 +1083,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BudgetPublicView: {
+      payload: Prisma.$BudgetPublicViewPayload<ExtArgs>
+      fields: Prisma.BudgetPublicViewFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BudgetPublicViewFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BudgetPublicViewFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload>
+        }
+        findFirst: {
+          args: Prisma.BudgetPublicViewFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BudgetPublicViewFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload>
+        }
+        findMany: {
+          args: Prisma.BudgetPublicViewFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload>[]
+        }
+        create: {
+          args: Prisma.BudgetPublicViewCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload>
+        }
+        createMany: {
+          args: Prisma.BudgetPublicViewCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BudgetPublicViewCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload>[]
+        }
+        delete: {
+          args: Prisma.BudgetPublicViewDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload>
+        }
+        update: {
+          args: Prisma.BudgetPublicViewUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload>
+        }
+        deleteMany: {
+          args: Prisma.BudgetPublicViewDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BudgetPublicViewUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BudgetPublicViewUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload>[]
+        }
+        upsert: {
+          args: Prisma.BudgetPublicViewUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BudgetPublicViewPayload>
+        }
+        aggregate: {
+          args: Prisma.BudgetPublicViewAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBudgetPublicView>
+        }
+        groupBy: {
+          args: Prisma.BudgetPublicViewGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BudgetPublicViewGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BudgetPublicViewCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BudgetPublicViewCountAggregateOutputType> | number
+        }
+      }
+    }
     User: {
       payload: Prisma.$UserPayload<ExtArgs>
       fields: Prisma.UserFieldRefs
@@ -1583,6 +1658,21 @@ export const BudgetEventRevisionScalarFieldEnum = {
 export type BudgetEventRevisionScalarFieldEnum = (typeof BudgetEventRevisionScalarFieldEnum)[keyof typeof BudgetEventRevisionScalarFieldEnum]
 
 
+export const BudgetPublicViewScalarFieldEnum = {
+  id: 'id',
+  visitorKey: 'visitorKey',
+  device: 'device',
+  userAgent: 'userAgent',
+  views: 'views',
+  firstSeenAt: 'firstSeenAt',
+  lastSeenAt: 'lastSeenAt',
+  updatedAt: 'updatedAt',
+  budgetId: 'budgetId'
+} as const
+
+export type BudgetPublicViewScalarFieldEnum = (typeof BudgetPublicViewScalarFieldEnum)[keyof typeof BudgetPublicViewScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1870,6 +1960,7 @@ export type GlobalOmitConfig = {
   eventDetails?: Prisma.EventDetailsOmit
   budgetAcceptance?: Prisma.BudgetAcceptanceOmit
   budgetEventRevision?: Prisma.BudgetEventRevisionOmit
+  budgetPublicView?: Prisma.BudgetPublicViewOmit
   user?: Prisma.UserOmit
   session?: Prisma.SessionOmit
   account?: Prisma.AccountOmit

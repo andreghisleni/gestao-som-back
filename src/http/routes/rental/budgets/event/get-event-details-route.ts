@@ -1,6 +1,7 @@
 import Elysia, { t } from "elysia";
 import { authMacro } from "~/auth";
 import { prisma } from "~/db/client";
+import { viewSummary } from "~/utils/public-views";
 import {
   budgetEventDetailsResponseSchema,
   internalEventInclude,
@@ -18,6 +19,9 @@ const budgetParamsSchema = t.Object({
  * grupos, mesma ordem — mais a trilha do aceite e o histórico de versões. O
  * `GET /rental/budgets/:id` continua sem saber de nada disso de propósito:
  * coleta de dados do evento não é parte do cálculo do orçamento.
+ *
+ * Chega junto o resumo de visitas do link (quantas, de quantos dispositivos e
+ * quando), porque é a resposta para "será que ele abriu?".
  */
 export const getBudgetEventDetailsRoute = new Elysia().macro(authMacro).get(
   "/:budgetId/event-details",
@@ -32,7 +36,7 @@ export const getBudgetEventDetailsRoute = new Elysia().macro(authMacro).get(
       return { error: "Budget not found" };
     }
 
-    return toBudgetEventDetails(budget);
+    return toBudgetEventDetails(budget, await viewSummary(budget.id));
   },
   {
     auth: true,

@@ -95,6 +95,14 @@ export type BudgetAcceptance = Prisma.BudgetAcceptanceModel
  */
 export type BudgetEventRevision = Prisma.BudgetEventRevisionModel
 /**
+ * Model BudgetPublicView
+ * Visitas do link público por visitante. A unidade é visita, não request:
+ * recarregar dentro de `PUBLIC_VIEW_WINDOW_MINUTES` não cria outra linha nem
+ * sobe `Budget.publicViewCount`. `visitor_key` é sha256(ip · dispositivo),
+ * truncado — o IP puro nunca fica guardado aqui.
+ */
+export type BudgetPublicView = Prisma.BudgetPublicViewModel
+/**
  * Model User
  * 
  */
